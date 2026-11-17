@@ -17,6 +17,7 @@ struct SettingsView: View {
         TabView(selection: $tab) {
             GeneralTab(state: state).tabItem { Label("General", systemImage: "gearshape") }.tag("general")
             DestinationsTab(state: state).tabItem { Label("Destinations", systemImage: "arrow.triangle.branch") }.tag("destinations")
+            AppsTab(state: state).tabItem { Label("Apps", systemImage: "app.badge") }.tag("apps")
             LearnedTab(state: state).tabItem { Label("Learned", systemImage: "brain") }.tag("learned")
             TestTab(state: state).tabItem { Label("Test a link", systemImage: "magnifyingglass") }.tag("test")
         }
@@ -84,6 +85,8 @@ private struct GeneralTab: View {
     }
 
     @ViewBuilder private var toggles: some View {
+        Toggle("Remove tracking parameters from links", isOn: ruleBinding(\.cleanLinks))
+        Toggle("Open Zoom, Teams and Slack links in their apps", isOn: ruleBinding(\.openInApps))
         Toggle("Open at login", isOn: $loginItem)
             .onChange(of: loginItem) { _, on in setLogin(on) }
             .disabled(!Permissions.canUseLoginItem)
@@ -110,6 +113,14 @@ private struct GeneralTab: View {
         case .ready(let hosts, let builtAt): "History of \(hosts) sites indexed at \(builtAt.formatted(date: .omitted, time: .shortened))."
         case .failed(let message): "Indexing failed: \(message)"
         }
+    }
+
+    private func ruleBinding(_ key: WritableKeyPath<RulesConfig, Bool>) -> Binding<Bool> {
+        Binding(get: { state.rules[keyPath: key] }, set: { value in
+            var rules = state.rules
+            rules[keyPath: key] = value
+            state.updateRules(rules)
+        })
     }
 
     private func refresh() {
@@ -204,6 +215,11 @@ private struct DestinationsTab: View {
                     get: { Color(hex: draft.destinations[index].color) },
                     set: { draft.destinations[index].color = NSColor($0).hexString; dirty = true }))
                 LabeledContent("Opens in", value: opensIn(draft.destinations[index]))
+                if LaunchArguments.supportsPrivate(draft.destinations[index]) {
+                    Toggle("Open in a private window", isOn: Binding(
+                        get: { draft.destinations[index].privateWindow },
+                        set: { draft.destinations[index].privateWindow = $0; dirty = true; addable = scanAddable() }))
+                }
                 if let account = draft.destinations[index].account { LabeledContent("Signed in as", value: account) }
                 Toggle("Default for everything else", isOn: Binding(
                     get: { draft.defaultDestination == draft.destinations[index].id },
@@ -242,7 +258,15 @@ private struct DestinationsTab: View {
 
     private func scanAddable() -> [Destination] {
         let existing = Set(draft.destinations.map(DestinationMerge.key))
-        return BrowserScanner.candidates().filter { !existing.contains(DestinationMerge.key($0)) }
+        let found = BrowserScanner.candidates()
+        let privates = found.filter(LaunchArguments.supportsPrivate).map { dest -> Destination in
+            var d = dest
+            d.id = "\(dest.id)-private"
+            d.name = "\(dest.name) (private)"
+            d.privateWindow = true
+            return d
+        }
+        return (found + privates).filter { !existing.contains(DestinationMerge.key($0)) }
     }
 
     private func binding(_ index: Int, _ key: WritableKeyPath<Destination, String>) -> Binding<String> {
@@ -339,6 +363,7 @@ private struct LearnedTab: View {
 
     private var rows: [Row] {
         state.engine.learned.hosts.map { Row(kind: "site", key: $0.key, target: $0.value) }.sorted { $0.key < $1.key }
+            + state.engine.learned.paths.map { Row(kind: "path", key: $0.key, target: $0.value) }.sorted { $0.key < $1.key }
             + state.engine.learned.fileIDs.map { Row(kind: "file", key: $0.key, target: $0.value) }.sorted { $0.key < $1.key }
     }
 
@@ -357,7 +382,11 @@ private struct LearnedTab: View {
                     TableColumn("Opens in") { Text(state.label($0.target)) }.width(110)
                     TableColumn("") { row in
                         Button("Forget") {
-                            if row.kind == "site" { state.forget(host: row.key) } else { state.forget(fileID: row.key) }
+                            switch row.kind {
+                            case "site": state.forget(host: row.key)
+                            case "path": state.forget(path: row.key)
+                            default: state.forget(fileID: row.key)
+                            }
                         }
                     }.width(70)
                 }
@@ -405,8 +434,16 @@ private struct TestTab: View {
             }
             .font(.callout)
 
-            if let parsed, let decision = state.engine.decide(LinkContext(url: parsed, sourceApp: app.isEmpty ? nil : app, sourceWindowTitle: title.isEmpty ? nil : title)) as Decision? {
-                result(parsed, decision)
+            if let parsed {
+                let cleaned = state.rules.cleanLinks ? LinkCleaner.clean(parsed) : parsed
+                if cleaned != parsed {
+                    Label("Tracking removed: \(cleaned.absoluteString)", systemImage: "wand.and.rays")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                }
+                result(cleaned, state.engine.decide(LinkContext(url: cleaned, sourceApp: app.isEmpty ? nil : app, sourceWindowTitle: title.isEmpty ? nil : title)))
             } else {
                 Spacer()
             }
@@ -455,6 +492,7 @@ private struct TestTab: View {
     private func stageLabel(_ stage: Stage) -> String {
         switch stage {
         case .forced: "You held option"
+        case .app: "Opens in its own app"
         case .rule: "One of your rules"
         case .decoder: "The Google account or file in the link"
         case .learned: "A choice you taught it"
@@ -464,4 +502,131 @@ private struct TestTab: View {
         case .fallback: "Your default"
         }
     }
+}
+
+private struct AppsTab: View {
+    @ObservedObject var state: AppState
+    @State private var draft: [SourceRule] = []
+    @State private var dirty = false
+    @State private var installed: [String] = []
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Send links from a specific app to a destination, for example everything from Slack to your work profile. Your own site rules always win. \"New or unclear\" covers sites without clear history, \"tie-breaker\" only sites you use in several places.")
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Table((0..<draft.count).map(RowIndex.init)) {
+                TableColumn("App") { row in
+                    let i = row.id
+                    TextField("App name", text: binding(i, \.app))
+                        .textFieldStyle(.plain)
+                }
+                .width(min: 100, ideal: 130)
+                TableColumn("Window title contains") { row in
+                    let i = row.id
+                    TextField("optional", text: Binding(
+                        get: { draft[i].titleContains ?? "" },
+                        set: { draft[i].titleContains = $0.isEmpty ? nil : $0; dirty = true }))
+                        .textFieldStyle(.plain)
+                }
+                .width(min: 90, ideal: 120)
+                TableColumn("Opens in") { row in
+                    let i = row.id
+                    Picker("", selection: binding(i, \.target)) {
+                        ForEach(state.destinations) { Text(state.label($0.id)).tag($0.id) }
+                    }
+                    .labelsHidden()
+                }
+                .width(min: 100, ideal: 120)
+                TableColumn("When") { row in
+                    let i = row.id
+                    Picker("", selection: Binding(get: { draft[i].strength }, set: { draft[i].strength = $0; dirty = true })) {
+                        Text("Always").tag(SourceStrength.always)
+                        Text("New or unclear").tag(SourceStrength.whenUnsure)
+                        Text("Tie-breaker").tag(SourceStrength.tieBreaker)
+                    }
+                    .labelsHidden()
+                }
+                .width(min: 120, ideal: 130)
+                TableColumn("") { row in
+                    let i = row.id
+                    Button { draft.remove(at: i); dirty = true } label: { Image(systemName: "minus.circle") }
+                        .buttonStyle(.borderless)
+                }
+                .width(28)
+            }
+            .frame(minHeight: 180)
+            HStack {
+                Menu("Add app") {
+                    ForEach(installed.filter { app in !draft.contains { $0.app.caseInsensitiveCompare(app) == .orderedSame } }, id: \.self) { app in
+                        Button(app) { add(app) }
+                    }
+                    Divider()
+                    Button("Other…") { add("") }
+                }
+                .fixedSize()
+                Spacer()
+                Button("Revert") { load() }.disabled(!dirty)
+                Button("Save") { save() }.keyboardShortcut("s").buttonStyle(.borderedProminent).disabled(!dirty)
+            }
+            learned
+        }
+        .onAppear {
+            installed = InstalledApps.names()
+            load()
+        }
+    }
+
+    @ViewBuilder private var learned: some View {
+        let tendencies = state.engine.tendencies?.all ?? []
+        GroupBox("Learned from your clicks") {
+            if tendencies.isEmpty {
+                Text("Nothing yet. Once at least \(AppTendencies.minLinks) links from one app clearly go to the same place, Detour uses that for new sites from that app.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                ForEach(tendencies, id: \.app) { item in
+                    HStack {
+                        Text(item.app)
+                        Spacer()
+                        Text("\(Int((item.tendency.share * 100).rounded()))% of \(item.tendency.total) links open in \(state.label(item.tendency.target))")
+                            .foregroundStyle(.secondary)
+                        Button("Make a rule") {
+                            draft.append(SourceRule(app: item.app, target: item.tendency.target))
+                            dirty = true
+                        }
+                        .disabled(draft.contains { $0.app.caseInsensitiveCompare(item.app) == .orderedSame })
+                    }
+                    .font(.callout)
+                }
+            }
+        }
+    }
+
+    private func binding(_ i: Int, _ key: WritableKeyPath<SourceRule, String>) -> Binding<String> {
+        Binding(get: { i < draft.count ? draft[i][keyPath: key] : "" }, set: { if i < draft.count { draft[i][keyPath: key] = $0; dirty = true } })
+    }
+
+    private func add(_ app: String) {
+        let target = Suggestions.workDestination(state.destinations, defaultID: state.rules.defaultDestination)?.id ?? state.rules.defaultDestination
+        draft.append(SourceRule(app: app, target: target))
+        dirty = true
+    }
+
+    private func load() {
+        draft = state.rules.sourceRules
+        dirty = false
+    }
+
+    private func save() {
+        var rules = state.rules
+        rules.sourceRules = draft.filter { !$0.app.trimmingCharacters(in: .whitespaces).isEmpty }
+        state.updateRules(rules)
+        load()
+    }
+}
+
+private struct RowIndex: Identifiable {
+    let id: Int
 }

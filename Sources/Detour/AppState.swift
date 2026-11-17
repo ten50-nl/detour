@@ -51,8 +51,10 @@ final class AppState: ObservableObject {
     init() {
         let (rules, error) = ConfigLoader.loadRules(from: Paths.rules, fallback: .empty)
         let learned = (try? JSONDecoder().decode(LearnedStore.self, from: Data(contentsOf: Paths.learned))) ?? LearnedStore()
-        let history = try? JSONDecoder().decode(HistoryIndex.self, from: Data(contentsOf: Paths.historyIndex))
+        let history = BrowserScanner.isDemo ? nil : try? JSONDecoder().decode(HistoryIndex.self, from: Data(contentsOf: Paths.historyIndex))
         engine = RoutingEngine(rules: rules, learned: learned, history: history)
+        engine.tendencies = BrowserScanner.isDemo ? AppTendencies() : DecisionLog.tendencies()
+        engine.appAvailable = AppLinkApps.availability()
         rulesError = error.map { "rules.json could not be read: \($0.localizedDescription)" }
         if error != nil { Self.backUpBrokenRules() }
         if let history { historyStatus = .ready(hosts: history.hosts.count, builtAt: history.builtAt) }
@@ -79,14 +81,31 @@ final class AppState: ObservableObject {
         engine.rules.displayNames()[id] ?? (id.isEmpty ? "your browser" : id)
     }
 
-    func handle(_ ctx: LinkContext) {
+    func handle(_ original: LinkContext) {
         if rulesDetector.hasChanged() { reloadRules() }
+        var ctx = original
+        if engine.rules.cleanLinks { ctx.url = LinkCleaner.clean(ctx.url) }
         let decision = engine.decide(ctx)
+        if decision.stage == .app, let appURL = decision.appURL {
+            addRecent(RecentLink(url: ctx.url, date: Date(), sourceApp: ctx.sourceApp, decision: decision, opened: nil))
+            log(ctx, target: nil, stage: .app, asked: false)
+            let webURL = ctx.url
+            guard !BrowserScanner.isDemo else { return }
+            Task { @MainActor in
+                if (try? await NSWorkspace.shared.open(appURL, configuration: NSWorkspace.OpenConfiguration())) == nil {
+                    self.launch(webURL, in: self.engine.rules.defaultDestination)
+                }
+            }
+            return
+        }
         var link = RecentLink(url: ctx.url, date: Date(), sourceApp: ctx.sourceApp, decision: decision)
         if decision.askUser, destinations.count > 1, let presentPicker {
             addRecent(link)
             presentPicker(ctx.url, decision) { target, remember in
-                if let target { self.open(ctx.url, in: target, remember: remember, recentID: link.id) }
+                if let target {
+                    self.open(ctx.url, in: target, remember: remember, recentID: link.id)
+                    self.learnFromApp(ctx.sourceApp, target: target, stage: decision.stage)
+                }
                 self.log(ctx, target: target, stage: decision.stage, asked: true)
             }
             return
@@ -94,6 +113,7 @@ final class AppState: ObservableObject {
         link.opened = decision.target
         addRecent(link)
         log(ctx, target: decision.target, stage: decision.stage, asked: false)
+        learnFromApp(ctx.sourceApp, target: decision.target, stage: decision.stage)
         launch(ctx.url, in: decision.target)
     }
 
@@ -105,15 +125,26 @@ final class AppState: ObservableObject {
             try? ConfigLoader.save(learned, to: Paths.learned)
         }
         if let recentID, let i = recent.firstIndex(where: { $0.id == recentID }) {
+            if remember, recent[i].opened != nil, recent[i].opened != target {
+                learnFromApp(recent[i].sourceApp, target: target, stage: .learned)
+            }
             recent[i].opened = target
             onRecentChange?()
         }
         launch(url, in: target)
     }
 
-    func forget(host: String? = nil, fileID: String? = nil) {
+    private func learnFromApp(_ app: String?, target: DestinationID, stage: Stage) {
+        guard let app, !target.isEmpty else { return }
+        var tendencies = engine.tendencies ?? AppTendencies()
+        tendencies.add(.init(app: app, target: target, stage: stage))
+        engine.tendencies = tendencies
+    }
+
+    func forget(host: String? = nil, path: String? = nil, fileID: String? = nil) {
         var learned = engine.learned
         if let host { learned.hosts[host] = nil }
+        if let path { learned.paths[path] = nil }
         if let fileID { learned.fileIDs[fileID] = nil }
         engine.learned = learned
         try? ConfigLoader.save(learned, to: Paths.learned)
@@ -159,6 +190,10 @@ final class AppState: ObservableObject {
 
     func rebuildHistory(completion: (() -> Void)? = nil) {
         if let completion { historyWaiters.append(completion) }
+        if BrowserScanner.isDemo {
+            flushWaiters()
+            return
+        }
         guard Permissions.hasFullDiskAccess else {
             historyStatus = .noAccess
             Notifier.fullDiskAccessLost()
@@ -166,6 +201,7 @@ final class AppState: ObservableObject {
             return
         }
         Notifier.fullDiskAccessWorks()
+        engine.appAvailable = AppLinkApps.availability()
         checkProfiles()
         guard !rebuilding else { return }
         let sources = historySources(for: destinations)
@@ -215,6 +251,7 @@ final class AppState: ObservableObject {
     }
 
     private func checkProfiles() {
+        guard !BrowserScanner.isDemo else { return }
         var problems: [DestinationID: ProfileProblem] = [:]
         for bundleID in Set(destinations.compactMap { $0.profileDir == nil ? nil : $0.bundleID }) {
             guard let url = Paths.localState(for: bundleID), let data = try? Data(contentsOf: url) else { continue }
@@ -231,6 +268,7 @@ final class AppState: ObservableObject {
     }
 
     private func launch(_ url: URL, in target: DestinationID) {
+        guard !BrowserScanner.isDemo else { return }
         let chain = openChain(target, default: engine.rules.defaultDestination)
             .filter { !blocked.contains($0) }
             .compactMap { engine.rules.destination($0) }

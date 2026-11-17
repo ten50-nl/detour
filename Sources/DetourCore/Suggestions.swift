@@ -48,6 +48,31 @@ public enum Suggestions {
         return out
     }
 
+    public static let workChatApps = ["Slack", "Microsoft Teams", "Mattermost", "Discord", "Zoom", "Webex", "Google Chat", "Linear", "Jira"]
+    public static let personalChatApps = ["Messages", "WhatsApp", "Telegram", "Signal", "Messenger", "FaceTime"]
+
+    public static func workDestination(_ destinations: [Destination], defaultID: DestinationID) -> Destination? {
+        destinations.first { dest in
+            guard dest.id != defaultID, let email = dest.account?.lowercased(), let domain = email.split(separator: "@").last else { return false }
+            return !publicMailDomains.contains(String(domain))
+        }
+    }
+
+    public static func appRules(installedApps: [String], destinations: [Destination], defaultID: DestinationID, existing: [SourceRule]) -> [SourceRule] {
+        let taken = Set(existing.map { $0.app.lowercased() })
+        let installed = installedApps.filter { !taken.contains($0.lowercased()) }
+        var out: [SourceRule] = []
+        if let work = workDestination(destinations, defaultID: defaultID) {
+            out += workChatApps.filter { app in installed.contains { $0.caseInsensitiveCompare(app) == .orderedSame } }
+                .map { SourceRule(app: $0, target: work.id) }
+        }
+        if destinations.contains(where: { $0.id == defaultID }) {
+            out += personalChatApps.filter { app in installed.contains { $0.caseInsensitiveCompare(app) == .orderedSame } }
+                .map { SourceRule(app: $0, target: defaultID) }
+        }
+        return out
+    }
+
     public static func accountMap(destinations: [Destination]) -> [String: DestinationID] {
         var byDomain: [String: Set<DestinationID>] = [:]
         var map: [String: DestinationID] = [:]

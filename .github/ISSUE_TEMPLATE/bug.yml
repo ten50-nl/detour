@@ -1,0 +1,23 @@
+name: Bug report
+description: A link went to the wrong place, or something else doesn't work
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Which link (remove anything private), where did it open and where did you expect it?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: What does "Test a link" say?
+      description: Settings → Test a link, paste the "Decided by" and "Why" lines.
+  - type: input
+    id: versions
+    attributes:
+      label: macOS and Detour version
+      placeholder: macOS 15.4, Detour 1.2.0
+    validations:
+      required: true

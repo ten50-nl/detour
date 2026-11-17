@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0
+
+- App rules in settings: send links from an app (Slack, Teams, Messages, ...) to a destination, either always, for new and unclear sites, or only to break a tie.
+- Learns per app: once most links from an app go to the same place, new sites from that app go there too.
+- Workspace-aware learning for GitHub, GitLab, Bitbucket, Notion, Linear, Vercel and Figma teams.
+- Removes tracking parameters from links (on by default).
+- Optionally opens Zoom, Teams and Slack links in their desktop apps.
+- Destinations can open in an incognito or private window.
+- Smart start suggests app rules for chat apps you have installed.
+
 ## 1.1.0
 
 - Learns from your Safari history too, so Safari counts as a destination in history, suggestions and Smart start.

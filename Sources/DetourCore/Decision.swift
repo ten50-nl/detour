@@ -17,7 +17,7 @@ public struct LinkContext: Sendable {
 }
 
 public enum Stage: String, Codable, Sendable {
-    case forced, rule, decoder, learned, history, source, ambiguous, fallback
+    case forced, app, rule, decoder, learned, history, source, ambiguous, fallback
 }
 
 public struct Decision: Equatable, Sendable {
@@ -25,11 +25,13 @@ public struct Decision: Equatable, Sendable {
     public var stage: Stage
     public var reason: String
     public var askUser: Bool
+    public var appURL: URL?
 
-    public init(target: DestinationID, stage: Stage, reason: String, askUser: Bool = false) {
+    public init(target: DestinationID, stage: Stage, reason: String, askUser: Bool = false, appURL: URL? = nil) {
         self.target = target
         self.stage = stage
         self.reason = reason
         self.askUser = askUser
+        self.appURL = appURL
     }
 }

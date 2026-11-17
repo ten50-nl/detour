@@ -10,8 +10,7 @@ enum DestinationOpener {
         guard FileManager.default.fileExists(atPath: appURL.path) else { throw OpenError() }
         let config = NSWorkspace.OpenConfiguration()
         config.activates = true
-        if let dir = destination.profileDir {
-            let arguments = ["--profile-directory=\(dir)", url.absoluteString]
+        if let arguments = LaunchArguments.arguments(for: destination, url: url) {
             if isRunning(appURL) {
                 try launchBinary(appURL: appURL, arguments: arguments)
             } else {

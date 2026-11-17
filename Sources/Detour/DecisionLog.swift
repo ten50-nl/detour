@@ -32,6 +32,20 @@ enum DecisionLog {
         }
     }
 
+    static func readAll() -> [Entry] {
+        guard let data = try? Data(contentsOf: Paths.decisions) else { return [] }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return data.split(separator: 0x0A).compactMap { try? decoder.decode(Entry.self, from: Data($0)) }
+    }
+
+    static func tendencies() -> AppTendencies {
+        AppTendencies(entries: readAll().compactMap { entry in
+            guard let app = entry.sourceApp, let target = entry.target, let stage = Stage(rawValue: entry.stage) else { return nil }
+            return AppTendencies.Entry(app: app, target: target, stage: stage)
+        })
+    }
+
     static func prune(now: Date = Date()) {
         queue.async {
             guard let data = try? Data(contentsOf: Paths.decisions) else { return }

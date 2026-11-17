@@ -3,13 +3,17 @@ import SQLite3
 import Testing
 @testable import DetourCore
 
-private func makeDB(_ path: URL, schema: String, inserts: [String]) throws {
+func makeDB(_ path: URL, schema: String, inserts: [String]) throws {
     var db: OpaquePointer?
     try #require(sqlite3_open(path.path, &db) == SQLITE_OK)
     defer { sqlite3_close(db) }
     for sql in [schema] + inserts {
         try #require(sqlite3_exec(db, sql, nil, nil, nil) == SQLITE_OK)
     }
+}
+
+func makeHistoryDB(_ path: URL, inserts: [String]) throws {
+    try makeDB(path, schema: "CREATE TABLE urls (id INTEGER PRIMARY KEY, url TEXT); CREATE TABLE visits (id INTEGER PRIMARY KEY, url INTEGER, visit_time INTEGER);", inserts: inserts)
 }
 
 @Suite struct HistoryIndexerTests {

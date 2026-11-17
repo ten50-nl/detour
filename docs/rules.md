@@ -7,13 +7,17 @@ Detour keeps its settings in `~/Library/Application Support/Detour/rules.json`. 
 For every link, Detour walks through these steps and stops at the first one that gives a clear answer:
 
 1. **Option key.** If you hold ⌥ while clicking, Detour always asks.
-2. **Your rules.** Each destination has a list of patterns. Destinations are checked in the order they appear in settings, so the first destination with a matching pattern wins.
-3. **Google links.** Calendar invites contain the calendar owner's email address, and some Google links carry `authuser=<email>`. Detour looks that address up in the account map. Google Docs, Sheets, Slides and Drive files you opened before go to the profile where you opened them.
-4. **Choices you taught it.** When you pick a destination in the picker (with "remember" on) or use "Open in…" from the menu bar, Detour remembers it for that site, or for that one file in the case of Google files.
-5. **Your history.** If at least 80% of your visits to a site in the last 90 days were in one destination, and you visited it at least 5 times, the link goes there.
-6. **Where the link came from.** Source rules can use the app you clicked in, and its window title, as a tie-breaker.
-7. **Ask.** Detour shows the picker when it has some evidence but nothing clear: sites in the ask list (Gmail, Google Docs and similar), sites you opened in more than one place without a clear favourite, and sites you visited only a few times (fewer than 5) in the last 90 days.
-8. **Default.** Everything else opens in your default destination.
+2. **Meeting apps.** With "Open Zoom, Teams and Slack links in their apps" turned on, those links skip the browser entirely.
+3. **Your rules.** Each destination has a list of patterns. Destinations are checked in the order they appear in settings, so the first destination with a matching pattern wins.
+4. **App rules set to "always".** Links from that app go to its destination, whatever the site.
+5. **Google links.** Calendar invites contain the calendar owner's email address, and some Google links carry `authuser=<email>`. Detour looks that address up in the account map. Google Docs, Sheets, Slides and Drive files you opened before go to the profile where you opened them.
+6. **Choices you taught it.** When you pick a destination in the picker (with "remember" on) or use "Open in…" from the menu bar, Detour remembers it for that site, or for that one file in the case of Google files.
+7. **Your history.** If at least 80% of your visits to a site in the last 90 days were in one destination, and you visited it at least 5 times, the link goes there. For sites that host many workspaces (GitHub, GitLab, Bitbucket, Notion, Linear, Vercel and Figma teams) Detour looks at the workspace in the link first, so `github.com/acme` and `github.com/yourname` can go to different places.
+8. **The app you clicked in.** App rules set to "new and unclear sites" handle sites without clear history. App rules set to "only to break a tie" only settle sites you've used in several places. And once at least 10 links from one app clearly went to the same destination (85% or more), Detour uses that for new sites from that app by itself.
+9. **Ask.** Detour shows the picker when it has some evidence but nothing clear: sites in the ask list (Gmail, Google Docs and similar), sites you opened in more than one place without a clear favourite, and sites you visited only a few times (fewer than 5) in the last 90 days.
+10. **Default.** Everything else opens in your default destination.
+
+Before any of this, Detour removes tracking parameters (`utm_…`, `fbclid`, `gclid` and similar) from the link, unless you turned that off.
 
 ## Patterns
 
@@ -70,16 +74,20 @@ Hosts are compared in lowercase, without `www.` and without a trailing dot.
   },
   "askHosts": ["docs.google.com", "drive.google.com", "mail.google.com", "calendar.google.com", "meet.google.com"],
   "sourceRules": [
-    { "app": "Slack", "target": "google-chrome-profile-1" },
-    { "app": "Ferdium", "titleContains": "WhatsApp", "target": "google-chrome-default" }
-  ]
+    { "app": "Slack", "target": "google-chrome-profile-1", "strength": "whenUnsure" },
+    { "app": "Ferdium", "titleContains": "WhatsApp", "target": "google-chrome-default", "strength": "tieBreaker" }
+  ],
+  "cleanLinks": true,
+  "openInApps": false
 }
 ```
 
 - `profileDir` is the folder name of a Chrome-family profile (`Default`, `Profile 1`, ...). Leave it out to open the browser as a whole.
 - `profileName` is the profile's name in the browser. If the browser no longer has that name, Detour warns you in settings but keeps routing. If the profile folder is gone, its links go to your default destination.
 - `accountMap` keys are a full email address or a domain. A full address wins over its domain.
-- `sourceRules` match the app name you clicked in, and optionally part of its window title (needs Accessibility).
+- `sourceRules` match the app name you clicked in, and optionally part of its window title (needs Accessibility). `strength` is `always`, `whenUnsure` (new and unclear sites) or `tieBreaker` (only sites used in several places). Rules without a strength are tie-breakers.
+- Add `"privateWindow": true` to a Chrome-family or Firefox destination to open its links in an incognito or private window.
+- `cleanLinks` removes tracking parameters. `openInApps` opens Zoom, Teams and Slack links in their desktop apps when installed.
 
 ## Other files
 

@@ -2,7 +2,7 @@ import Foundation
 
 public enum DestinationMerge {
     public static func key(_ dest: Destination) -> String {
-        "\(dest.bundleID)|\(dest.profileDir ?? "")"
+        "\(dest.bundleID)|\(dest.profileDir ?? "")\(dest.privateWindow ? "|private" : "")"
     }
 
     public static func merge(saved: [Destination], scanned: [Destination]) -> [Destination] {

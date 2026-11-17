@@ -1,14 +1,34 @@
 import Foundation
 
-public struct SourceRule: Codable, Equatable, Sendable {
+public enum SourceStrength: String, Codable, Sendable, CaseIterable {
+    case always, whenUnsure, tieBreaker
+}
+
+public struct SourceRule: Codable, Equatable, Hashable, Sendable {
     public var app: String
     public var titleContains: String?
     public var target: DestinationID
+    public var strength: SourceStrength
 
-    public init(app: String, titleContains: String? = nil, target: DestinationID) {
+    public init(app: String, titleContains: String? = nil, target: DestinationID, strength: SourceStrength = .whenUnsure) {
         self.app = app
         self.titleContains = titleContains
         self.target = target
+        self.strength = strength
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        app = try c.decode(String.self, forKey: .app)
+        titleContains = try c.decodeIfPresent(String.self, forKey: .titleContains)
+        target = try c.decode(DestinationID.self, forKey: .target)
+        strength = try c.decodeIfPresent(SourceStrength.self, forKey: .strength) ?? .tieBreaker
+    }
+
+    public func matches(app other: String, title: String?) -> Bool {
+        guard app.caseInsensitiveCompare(other) == .orderedSame else { return false }
+        guard let needle = titleContains?.lowercased(), !needle.isEmpty else { return true }
+        return (title ?? "").lowercased().contains(needle)
     }
 }
 
@@ -22,15 +42,32 @@ public struct RulesConfig: Codable, Equatable, Sendable {
     public var accountMap: [String: DestinationID]
     public var sourceRules: [SourceRule]
     public var askHosts: [String]
+    public var openInApps: Bool
+    public var cleanLinks: Bool
 
     public init(version: Int = RulesConfig.currentVersion, destinations: [Destination], defaultDestination: DestinationID,
-                accountMap: [String: DestinationID] = [:], sourceRules: [SourceRule] = [], askHosts: [String] = RulesConfig.defaultAskHosts) {
+                accountMap: [String: DestinationID] = [:], sourceRules: [SourceRule] = [], askHosts: [String] = RulesConfig.defaultAskHosts,
+                openInApps: Bool = false, cleanLinks: Bool = true) {
         self.version = version
         self.destinations = destinations
         self.defaultDestination = defaultDestination
         self.accountMap = accountMap
         self.sourceRules = sourceRules
         self.askHosts = askHosts
+        self.openInApps = openInApps
+        self.cleanLinks = cleanLinks
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        version = try c.decodeIfPresent(Int.self, forKey: .version) ?? RulesConfig.currentVersion
+        destinations = try c.decode([Destination].self, forKey: .destinations)
+        defaultDestination = try c.decode(DestinationID.self, forKey: .defaultDestination)
+        accountMap = try c.decodeIfPresent([String: DestinationID].self, forKey: .accountMap) ?? [:]
+        sourceRules = try c.decodeIfPresent([SourceRule].self, forKey: .sourceRules) ?? []
+        askHosts = try c.decodeIfPresent([String].self, forKey: .askHosts) ?? RulesConfig.defaultAskHosts
+        openInApps = try c.decodeIfPresent(Bool.self, forKey: .openInApps) ?? false
+        cleanLinks = try c.decodeIfPresent(Bool.self, forKey: .cleanLinks) ?? true
     }
 
     public func destination(_ id: DestinationID) -> Destination? {

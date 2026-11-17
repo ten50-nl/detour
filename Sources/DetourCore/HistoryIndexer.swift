@@ -63,6 +63,9 @@ public struct HistoryIndexer: Sendable {
             for raw in urls {
                 guard let url = URL(string: raw), let host = normalizedHost(url) else { continue }
                 index.hosts[host, default: [:]][source.target, default: 0] += 1
+                if let key = PathKey.key(for: url) {
+                    index.paths[key, default: [:]][source.target, default: 0] += 1
+                }
                 if let id = GoogleDecoder.fileID(in: url) {
                     index.fileIDs[id, default: []].insert(source.target)
                 }

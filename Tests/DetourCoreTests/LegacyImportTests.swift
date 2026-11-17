@@ -39,7 +39,7 @@ import Testing
         #expect(rules.destination("personal")?.patterns == ["linkedin.com", "news.example"])
         #expect(rules.askHosts == ["docs.google.com", "dash.cloudflare.com"])
         #expect(rules.accountMap == ["acme.com": "work", "gmail.com": "personal"])
-        #expect(rules.sourceRules == [SourceRule(app: "Ferdium", titleContains: "Mattermost", target: "work")])
+        #expect(rules.sourceRules == [SourceRule(app: "Ferdium", titleContains: "Mattermost", target: "work", strength: .tieBreaker)])
     }
 
     @Test func configLoaderMigratesV1() throws {

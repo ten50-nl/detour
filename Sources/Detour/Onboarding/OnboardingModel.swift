@@ -21,6 +21,8 @@ final class OnboardingModel: ObservableObject {
     @Published var suggestions: [DestinationID: [RuleSuggestion]] = [:]
     @Published var accepted: Set<String> = []
     @Published var videoTarget: DestinationID?
+    @Published var appSuggestions: [SourceRule] = []
+    @Published var acceptedApps: Set<String> = []
     @Published var loadingSuggestions = false
     @Published var imported = false
     @Published var launchAtLogin = true
@@ -167,6 +169,9 @@ final class OnboardingModel: ObservableObject {
     }
 
     private func loadSuggestions() {
+        let installed = BrowserScanner.isDemo ? ["Slack", "Microsoft Teams", "Messages", "WhatsApp"] : InstalledApps.names()
+        appSuggestions = Suggestions.appRules(installedApps: installed, destinations: state.destinations,
+                                              defaultID: state.rules.defaultDestination, existing: state.rules.sourceRules)
         if BrowserScanner.isDemo {
             suggestions = BrowserScanner.demoSuggestions(destinations: state.destinations, defaultID: state.rules.defaultDestination)
             accepted = Set(suggestions.values.flatMap { $0 }.map { "\($0.destination)|\($0.host)" })
@@ -200,6 +205,7 @@ final class OnboardingModel: ObservableObject {
             }
             rules.destinations[i].patterns = patterns
         }
+        rules.sourceRules += appSuggestions.filter { acceptedApps.contains($0.app) }
         state.updateRules(rules)
     }
 

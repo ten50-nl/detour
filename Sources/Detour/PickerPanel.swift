@@ -27,7 +27,7 @@ final class PickerPanel: NSObject, NSWindowDelegate {
         let isFile = GoogleDecoder.fileID(in: url) != nil
         let host = normalizedHost(url) ?? url.absoluteString
         model = PickerModel(host: host, reason: decision.reason, selected: decision.target, destinations: Array(destinations.prefix(RulesConfig.maxDestinations)),
-                            rememberLabel: isFile ? "Remember for this file" : "Remember for \(host)")
+                            rememberLabel: isFile ? "Remember for this file" : "Remember for \(PathKey.key(for: url) ?? host)")
         panel = KeyablePanel(contentRect: NSRect(x: 0, y: 0, width: 420, height: 180),
                              styleMask: [.nonactivatingPanel, .titled, .fullSizeContentView],
                              backing: .buffered, defer: false)

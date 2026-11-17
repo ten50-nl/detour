@@ -277,6 +277,23 @@ private struct SmartStartStep: View {
                             }
                         }
                     }
+                    if !model.appSuggestions.isEmpty {
+                        Section {
+                            ForEach(model.appSuggestions, id: \.app) { rule in
+                                Toggle(isOn: Binding(
+                                    get: { model.acceptedApps.contains(rule.app) },
+                                    set: { if $0 { model.acceptedApps.insert(rule.app) } else { model.acceptedApps.remove(rule.app) } })) {
+                                    HStack {
+                                        Text("Links from \(rule.app)")
+                                        Spacer()
+                                        Text("new sites open in \(model.state.label(rule.target))").font(.caption).foregroundStyle(.secondary)
+                                    }
+                                }
+                            }
+                        } header: {
+                            Text("Apps you might want to route (optional)")
+                        }
+                    }
                     let accounts = model.state.rules.accountMap.sorted { $0.key < $1.key }
                     if !accounts.isEmpty {
                         Section("Google links for these accounts") {
