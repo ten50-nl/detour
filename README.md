@@ -24,7 +24,9 @@ You click a Jira link in Slack and it opens in your personal Chrome profile. A Y
 Detour sits between your apps and your browsers and decides for you. Work links go to your work profile, video goes to your ad-blocking browser, and everything else opens where you want it. It learns from your own browsing history, so most links need no rule at all, and it only asks when it genuinely can't tell.
 
 <p align="center">
-  <img src="docs/images/onboarding-destinations.png" width="680" alt="Choosing destinations during setup">
+  <a href="https://detour.ten50.nl/media/detour.mp4"><img src="docs/images/demo.gif" width="800" alt="Detour in 30 seconds: links from Slack, Mail and Messages open in the right browser profile, with the reason shown"></a>
+  <br>
+  <sub><a href="https://detour.ten50.nl/media/detour.mp4">Watch the full video</a></sub>
 </p>
 
 ## Features
