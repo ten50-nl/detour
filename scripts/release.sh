@@ -52,7 +52,7 @@ echo "built $DMG ($VERSION) sha256 $SHA"
 
 if [[ "$PUBLISH" == "--publish" ]]; then
   git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null && { echo "tag v$VERSION exists" >&2; exit 1; }
-  git tag "v$VERSION"
+  git tag -m "Detour $VERSION" "v$VERSION"
   git push origin "v$VERSION"
   NOTES=$(awk "/^## $VERSION/{f=1;next}/^## /{f=0}f" CHANGELOG.md)
   gh release create "v$VERSION" "$DMG" "$OUT/Detour-$VERSION.dmg" --repo "$REPO" --title "Detour $VERSION" --notes "$NOTES"
