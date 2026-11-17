@@ -4,7 +4,7 @@ Thanks for helping out. Bug reports, ideas and pull requests are all welcome.
 
 ## Reporting a bug
 
-Open an [issue](https://github.com/ten50nl/detour/issues/new/choose) with the bug template. The most useful things to include:
+Open an [issue](https://github.com/ten50-nl/detour/issues/new/choose) with the bug template. The most useful things to include:
 
 - your macOS version and Detour version (Settings → General)
 - the link that went to the wrong place, and where you expected it
@@ -21,7 +21,7 @@ Open an issue with the feature template and describe the situation you're in, no
 You need Xcode 16 or later.
 
 ```sh
-git clone https://github.com/ten50nl/detour.git
+git clone https://github.com/ten50-nl/detour.git
 cd detour
 swift test
 DETOUR_CONFIG_DIR=/tmp/detour-dev scripts/build-app.sh

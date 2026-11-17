@@ -2,7 +2,7 @@ cask "detour" do
   version "@VERSION@"
   sha256 "@SHA256@"
 
-  url "https://github.com/ten50nl/detour/releases/download/v#{version}/Detour-#{version}.dmg"
+  url "https://github.com/ten50-nl/detour/releases/download/v#{version}/Detour-#{version}.dmg"
   name "Detour"
   desc "Opens every link in the right browser and profile"
   homepage "https://detour.ten50.nl"

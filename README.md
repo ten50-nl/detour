@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ten50nl/detour/releases/latest/download/Detour.dmg"><strong>Download for macOS</strong></a>
+  <a href="https://github.com/ten50-nl/detour/releases/latest/download/Detour.dmg"><strong>Download for macOS</strong></a>
   ·
   <a href="https://detour.ten50.nl">Website</a>
   ·
@@ -40,17 +40,17 @@ Detour sits between your apps and your browsers and decides for you. Work links 
 - **Asks only when unsure**, with a small picker at your cursor. Press 1 to 9 to choose. Hold ⌥ while clicking to always choose yourself.
 - **Easy to correct.** The menu bar shows your last links. "Open in…" sends one elsewhere and remembers it.
 - **Smart start.** Setup suggests rules from your history, so it works well from the first click.
-- **Private by design.** No account, no network calls, no analytics. Everything stays on your Mac.
+- **Private by design.** No account, no analytics, everything stays on your Mac. The only network request is an optional daily update check that you turn on yourself.
 - **Free and open source**, forever. MIT licensed.
 
 ## Install
 
-**Download:** get [Detour.dmg](https://github.com/ten50nl/detour/releases/latest/download/Detour.dmg), open it and drag Detour to Applications. It's signed and notarized by Apple.
+**Download:** get [Detour.dmg](https://github.com/ten50-nl/detour/releases/latest/download/Detour.dmg), open it and drag Detour to Applications. It's signed and notarized by Apple.
 
 **Homebrew:**
 
 ```sh
-brew install --cask ten50nl/tap/detour
+brew install --cask ten50-nl/tap/detour
 ```
 
 Requires macOS 15 or later, on Apple silicon or Intel.
@@ -76,7 +76,8 @@ For every link Detour checks, in order: your rules, Google account hints, choice
 
 ## Privacy
 
-- Detour makes no network requests. It opens links, nothing more.
+- Detour makes no network requests of its own, except the update check: off by default, and when you turn it on it asks GitHub once a day for the latest version. Nothing about you or your links is sent.
+- Updates are only installed when they're signed by the same developer and accepted by Apple's Gatekeeper.
 - It reads your browsers' profile list and history files locally to build a small summary: per site, how often you visited it in each destination. Page titles and full URLs are not stored, except for Google file IDs you opened before.
 - All settings live in `~/Library/Application Support/Detour/`.
 
@@ -99,7 +100,7 @@ Pick another default browser in System Settings → Desktop & Dock → Default w
 You need Xcode 16 or later.
 
 ```sh
-git clone https://github.com/ten50nl/detour.git
+git clone https://github.com/ten50-nl/detour.git
 cd detour
 swift test
 scripts/build-app.sh --install

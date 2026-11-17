@@ -356,6 +356,14 @@ private struct FinishingStep: View {
                 Toggle("Open Detour at login", isOn: $model.launchAtLogin)
                     .disabled(!Permissions.canUseLoginItem)
                 Toggle("Show the menu bar icon", isOn: $showIcon)
+                Toggle(isOn: Binding(get: { Updater.shared.enabled }, set: { Updater.shared.enabled = $0 })) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Check for updates automatically")
+                        Text("Asks GitHub once a day for the latest version, nothing else.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Accessibility (optional)")
@@ -372,7 +380,7 @@ private struct FinishingStep: View {
                 }
             }
             .formStyle(.grouped)
-            .frame(maxWidth: 520, maxHeight: 220)
+            .frame(maxWidth: 520, maxHeight: 300)
         }
     }
 }

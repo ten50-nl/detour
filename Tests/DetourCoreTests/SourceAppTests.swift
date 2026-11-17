@@ -120,3 +120,28 @@ import Testing
         #expect(s.isEmpty)
     }
 }
+
+@Suite struct TendencyDriftTests {
+    func entries(_ app: String, _ target: DestinationID, _ n: Int) -> [AppTendencies.Entry] {
+        Array(repeating: AppTendencies.Entry(app: app, target: target, stage: .rule), count: n)
+    }
+
+    @Test func onlyRecentLinksCount() {
+        let t = AppTendencies(entries: entries("Slack", "personal", 60) + entries("Slack", "work", 50))
+        #expect(t.target(for: "Slack")?.target == "work")
+        #expect(t.target(for: "Slack")?.total == AppTendencies.window)
+    }
+
+    @Test func driftingClicksBackOff() {
+        let t = AppTendencies(entries: entries("Slack", "work", 40) + entries("Slack", "personal", 20))
+        #expect(t.target(for: "Slack") == nil)
+    }
+
+    @Test func forgetStartsFresh() {
+        var t = AppTendencies(entries: entries("Slack", "work", 30))
+        t.forget(app: "slack")
+        #expect(t.target(for: "Slack") == nil)
+        for e in entries("Slack", "personal", 12) { t.add(e) }
+        #expect(t.target(for: "Slack")?.target == "personal")
+    }
+}

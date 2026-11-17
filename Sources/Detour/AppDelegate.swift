@@ -33,6 +33,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             PickerPanel.show(url: url, decision: decision, destinations: shown, completion: completion)
         }
         state.start()
+        Updater.shared.start()
         if BrowserScanner.isDemo, let raw = ProcessInfo.processInfo.environment["DETOUR_PICKER_URL"], let url = URL(string: raw) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 self?.state.handle(LinkContext(url: url, sourceApp: "Mail"))

@@ -38,6 +38,10 @@ final class MenuBarController: NSObject, NSMenuDelegate {
 
     func menuNeedsUpdate(_ menu: NSMenu) {
         menu.removeAllItems()
+        if let update = Updater.shared.available {
+            menu.addItem(action("Update to Detour \(update.version)…", #selector(installUpdate)))
+            menu.addItem(.separator())
+        }
         if state.recent.isEmpty {
             menu.addItem(disabled("No links yet"))
         } else {
@@ -52,6 +56,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         }
         menu.addItem(action("Rebuild history index", #selector(rebuild)))
         menu.addItem(action("Set up again…", #selector(setup)))
+        menu.addItem(action("Check for updates", #selector(checkUpdates)))
         menu.addItem(action("Settings…", #selector(settings), key: ","))
         menu.addItem(.separator())
         menu.addItem(action("Quit Detour", #selector(quit), key: "q"))
@@ -105,6 +110,11 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     @objc private func rebuild() { state.rebuildHistory() }
     @objc private func settings() { openSettings() }
     @objc private func setup() { openOnboarding() }
+    @objc private func installUpdate() { Updater.shared.install() }
+    @objc private func checkUpdates() {
+        Updater.shared.check(userInitiated: true)
+        openSettings()
+    }
     @objc private func quit() { NSApp.terminate(nil) }
 }
 

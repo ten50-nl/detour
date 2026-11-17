@@ -141,6 +141,15 @@ final class AppState: ObservableObject {
         engine.tendencies = tendencies
     }
 
+    func forgetAppLearning(_ app: String) {
+        var resets = (UserDefaults.standard.dictionary(forKey: DecisionLog.resetsKey) as? [String: Date]) ?? [:]
+        resets[app.lowercased()] = Date()
+        UserDefaults.standard.set(resets, forKey: DecisionLog.resetsKey)
+        var tendencies = engine.tendencies ?? AppTendencies()
+        tendencies.forget(app: app)
+        engine.tendencies = tendencies
+    }
+
     func forget(host: String? = nil, path: String? = nil, fileID: String? = nil) {
         var learned = engine.learned
         if let host { learned.hosts[host] = nil }

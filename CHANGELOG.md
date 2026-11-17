@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.0
+
+- Optional automatic update check, off by default. Turn it on in settings or during setup and Detour asks GitHub once a day for a new version, then installs it in place after checking the signature. Homebrew installs get the brew command instead.
+- "Check for updates" in the menu bar.
+- Learning per app now looks at your last 50 links from that app only, so it follows you when your habits change. Settings → Apps has a Forget button per app.
+- Moved to the ten50-nl organisation on GitHub. Old links and the Homebrew tap keep working.
+
 ## 1.2.0
 
 - App rules in settings: send links from an app (Slack, Teams, Messages, ...) to a destination, either always, for new and unclear sites, or only to break a tie.

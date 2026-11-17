@@ -6,10 +6,10 @@ Only the latest release of Detour gets security fixes. Update through the downlo
 
 ## Reporting a vulnerability
 
-Please don't open a public issue for security problems. Report them privately through GitHub's [private vulnerability reporting](https://github.com/ten50nl/detour/security/advisories/new), or mail [hallo@ten50.nl](mailto:hallo@ten50.nl) with "Detour security" in the subject.
+Please don't open a public issue for security problems. Report them privately through GitHub's [private vulnerability reporting](https://github.com/ten50-nl/detour/security/advisories/new), or mail [hallo@ten50.nl](mailto:hallo@ten50.nl) with "Detour security" in the subject.
 
 Include what you found, how to reproduce it and which version you used. You'll get a reply within a few working days, and we'll keep you posted until it's fixed.
 
 ## What Detour has access to
 
-Detour runs locally and makes no network requests. With Full Disk Access it reads your browsers' profile lists and history files to build a summary of how often you visit each site per profile. Reports about anything that could expose that data, or make Detour open a link somewhere you didn't intend, are especially welcome.
+Detour runs locally. Its only network request is the optional update check (off by default), which asks GitHub for the latest release and only installs a download signed by the same developer. With Full Disk Access it reads your browsers' profile lists and history files to build a summary of how often you visit each site per profile. Reports about anything that could expose that data, or make Detour open a link somewhere you didn't intend, are especially welcome.

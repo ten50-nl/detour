@@ -4,9 +4,10 @@ import DetourCore
 import SwiftUI
 
 enum Links {
+    static let repoSlug = "ten50-nl/detour"
     static let website = URL(string: "https://detour.ten50.nl")!
-    static let github = URL(string: "https://github.com/ten50nl/detour")!
-    static let rulesDocs = URL(string: "https://github.com/ten50nl/detour/blob/main/docs/rules.md")!
+    static let github = URL(string: "https://github.com/ten50-nl/detour")!
+    static let rulesDocs = URL(string: "https://github.com/ten50-nl/detour/blob/main/docs/rules.md")!
 }
 
 struct SettingsView: View {
@@ -61,6 +62,7 @@ private struct GeneralTab: View {
         Form {
             Section { statusRows }
             Section { toggles }
+            Section { UpdatesSection() }
             Section { about }
             if let error {
                 Text(error).foregroundStyle(.red).font(.caption)
@@ -581,7 +583,7 @@ private struct AppsTab: View {
         let tendencies = state.engine.tendencies?.all ?? []
         GroupBox("Learned from your clicks") {
             if tendencies.isEmpty {
-                Text("Nothing yet. Once at least \(AppTendencies.minLinks) links from one app clearly go to the same place, Detour uses that for new sites from that app.")
+                Text("Nothing yet. Once at least \(AppTendencies.minLinks) links from one app clearly go to the same place, Detour uses that for new sites from that app. Only your last \(AppTendencies.window) links per app count, so it follows you when your habits change.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -597,6 +599,7 @@ private struct AppsTab: View {
                             dirty = true
                         }
                         .disabled(draft.contains { $0.app.caseInsensitiveCompare(item.app) == .orderedSame })
+                        Button("Forget") { state.forgetAppLearning(item.app) }
                     }
                     .font(.callout)
                 }
@@ -629,4 +632,44 @@ private struct AppsTab: View {
 
 private struct RowIndex: Identifiable {
     let id: Int
+}
+
+struct UpdatesSection: View {
+    @ObservedObject private var updater = Updater.shared
+
+    var body: some View {
+        Toggle(isOn: Binding(get: { updater.enabled }, set: { updater.enabled = $0 })) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Check for updates automatically")
+                Text("Once a day Detour asks GitHub for the latest version. Nothing else is sent. Off by default.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        HStack {
+            Text(statusText)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer()
+            if updater.available != nil {
+                Button("Install update") { updater.install() }
+                    .buttonStyle(.borderedProminent)
+            } else {
+                Button("Check now") { updater.check(userInitiated: true) }
+                    .disabled(updater.status == .checking)
+            }
+        }
+    }
+
+    private var statusText: String {
+        switch updater.status {
+        case .idle: "You have Detour \(updater.currentVersion)."
+        case .checking: "Checking…"
+        case .upToDate: "Detour \(updater.currentVersion) is the latest version."
+        case .available(let update): "Detour \(update.version) is available. You have \(updater.currentVersion)."
+        case .installing(let message): message
+        case .failed(let message): message
+        }
+    }
 }

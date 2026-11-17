@@ -1,7 +1,7 @@
 #!/bin/zsh
 # Builds a universal, Developer ID signed and notarized Detour.dmg.
 # Usage: scripts/release.sh <version> [--publish]
-#   --publish  create the GitHub release and update the Homebrew cask in ten50nl/homebrew-tap
+#   --publish  create the GitHub release and update the Homebrew cask in ten50-nl/homebrew-tap
 # Needs: a "Developer ID Application" certificate in the keychain and a notarytool keychain profile
 #   (xcrun notarytool store-credentials detour-notary --apple-id <id> --team-id <team>).
 set -euo pipefail
@@ -11,8 +11,8 @@ VERSION=${1:?usage: scripts/release.sh <version> [--publish]}
 PUBLISH=${2:-}
 IDENTITY=${SIGN_IDENTITY:-$(security find-identity -v -p codesigning | sed -n 's/.*"\(Developer ID Application: [^"]*\)".*/\1/p' | head -1)}
 PROFILE=${NOTARY_PROFILE:-detour-notary}
-REPO=ten50nl/detour
-TAP=ten50nl/homebrew-tap
+REPO=ten50-nl/detour
+TAP=ten50-nl/homebrew-tap
 OUT=build/release
 APP=$OUT/Detour.app
 DMG=$OUT/Detour.dmg

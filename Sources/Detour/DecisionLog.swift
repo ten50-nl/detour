@@ -39,9 +39,13 @@ enum DecisionLog {
         return data.split(separator: 0x0A).compactMap { try? decoder.decode(Entry.self, from: Data($0)) }
     }
 
+    static let resetsKey = "appLearningResets"
+
     static func tendencies() -> AppTendencies {
-        AppTendencies(entries: readAll().compactMap { entry in
+        let resets = (UserDefaults.standard.dictionary(forKey: resetsKey) as? [String: Date]) ?? [:]
+        return AppTendencies(entries: readAll().compactMap { entry in
             guard let app = entry.sourceApp, let target = entry.target, let stage = Stage(rawValue: entry.stage) else { return nil }
+            if let reset = resets[app.lowercased()], entry.time <= reset { return nil }
             return AppTendencies.Entry(app: app, target: target, stage: stage)
         })
     }

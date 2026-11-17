@@ -24,22 +24,36 @@ public struct AppTendencies: Sendable, Equatable {
     static let countedStages: Set<Stage> = [.rule, .decoder, .learned, .history, .ambiguous, .forced]
     static let ignoredApps: Set<String> = ["detour"]
 
-    public private(set) var counts: [String: [DestinationID: Int]] = [:]
+    public static let window = 50
+
+    private var recent: [String: [DestinationID]] = [:]
     private var names: [String: String] = [:]
 
     public init(entries: [Entry] = []) {
         for entry in entries { add(entry) }
     }
 
+    public var counts: [String: [DestinationID: Int]] {
+        recent.mapValues { list in list.reduce(into: [:]) { $0[$1, default: 0] += 1 } }
+    }
+
     public mutating func add(_ entry: Entry) {
         let key = entry.app.lowercased()
         guard !entry.target.isEmpty, !Self.ignoredApps.contains(key), Self.countedStages.contains(entry.stage) else { return }
-        counts[key, default: [:]][entry.target, default: 0] += 1
+        var list = recent[key, default: []]
+        list.append(entry.target)
+        if list.count > Self.window { list.removeFirst(list.count - Self.window) }
+        recent[key] = list
         if names[key] == nil { names[key] = entry.app }
     }
 
+    public mutating func forget(app: String) {
+        recent[app.lowercased()] = nil
+    }
+
     public func target(for app: String) -> Tendency? {
-        guard let byTarget = counts[app.lowercased()] else { return nil }
+        guard let list = recent[app.lowercased()] else { return nil }
+        let byTarget = list.reduce(into: [DestinationID: Int]()) { $0[$1, default: 0] += 1 }
         let total = byTarget.values.reduce(0, +)
         guard total >= Self.minLinks, let top = byTarget.max(by: { $0.value < $1.value }) else { return nil }
         let share = Double(top.value) / Double(total)
@@ -47,6 +61,6 @@ public struct AppTendencies: Sendable, Equatable {
     }
 
     public var all: [(app: String, tendency: Tendency)] {
-        counts.keys.sorted().compactMap { key in target(for: key).map { (names[key] ?? key, $0) } }
+        recent.keys.sorted().compactMap { key in target(for: key).map { (names[key] ?? key, $0) } }
     }
 }

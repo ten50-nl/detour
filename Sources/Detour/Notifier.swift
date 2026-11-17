@@ -27,6 +27,11 @@ enum Notifier {
         post(title: "Browser profile for \(name) changed", body: detail)
     }
 
+    static func updateAvailable(version: String, homebrew: Bool) {
+        post(title: "Detour \(version) is available",
+             body: homebrew ? "Update with brew upgrade --cask detour." : "Install it from the menu bar icon or in Detour settings.")
+    }
+
     static func rulesBroken() {
         post(title: "Detour could not read rules.json", body: "A copy is saved next to it as rules.broken-….json. Fix the file or set up Detour again from the menu bar.")
     }
