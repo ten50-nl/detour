@@ -21,6 +21,7 @@ packages:
 targets:
   Detour:
     type: application
+    scheme: {}
     platform: macOS
     sources:
       - path: Sources/Detour
@@ -36,6 +37,7 @@ targets:
         CODE_SIGN_IDENTITY: "Developer ID Application"
   Detour (App Store):
     type: application
+    scheme: {}
     platform: macOS
     sources:
       - path: Sources/Detour
