@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.0
+
+- Settings is now a native macOS settings window with a toolbar.
+- The picker sits on a frosted glass background, and the menu bar shows browser icons.
+- Shortcuts actions: "Open link with Detour" and "Where does a link open?".
+- Spotify, Music, Discord, Linear and Notion links can open in their apps, next to Zoom, Teams and Slack.
+- Also coming to the Mac App Store.
+
 ## 1.3.0
 
 - Optional automatic update check, off by default. Turn it on in settings or during setup and Detour asks GitHub once a day for a new version, then installs it in place after checking the signature. Homebrew installs get the brew command instead.
