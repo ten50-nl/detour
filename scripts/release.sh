@@ -64,5 +64,14 @@ if [[ "$PUBLISH" == "--publish" ]]; then
   git -C "$TMP" -c user.name="$(git config user.name)" -c user.email="$(git config user.email)" commit -qm "feat: detour $VERSION"
   git -C "$TMP" push -q
   rm -rf "$TMP"
+  SITE=../detour.ten50.nl
+  if [[ -f "$SITE/public/index.html" ]]; then
+    sed -i '' -E "s/\"softwareVersion\": \"[0-9.]+\"/\"softwareVersion\": \"$VERSION\"/" "$SITE/public/index.html"
+    if [[ -n "$(git -C "$SITE" status --porcelain)" ]]; then
+      git -C "$SITE" commit -qam "feat: version $VERSION"
+      git -C "$SITE" push -q
+      echo "website updated to $VERSION"
+    fi
+  fi
   echo "published v$VERSION"
 fi
