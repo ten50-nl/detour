@@ -27,7 +27,7 @@ struct WhereDoesLinkOpenIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ReturnsValue<String> & ProvidesDialog {
         guard let state = AppDelegate.current?.state else { throw DetourIntentError.notRunning }
-        let decision = state.engine.decide(LinkContext(url: state.rules.cleanLinks ? LinkCleaner.clean(url) : url))
+        let decision = state.engine.decide(LinkContext(url: state.rules.prepare(url)))
         let answer = decision.askUser
             ? "Detour would ask, suggesting \(state.label(decision.target)): \(decision.reason)."
             : "Opens in \(state.label(decision.target)): \(decision.reason)."

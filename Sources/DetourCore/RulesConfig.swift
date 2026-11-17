@@ -44,10 +44,11 @@ public struct RulesConfig: Codable, Equatable, Sendable {
     public var askHosts: [String]
     public var openInApps: Bool
     public var cleanLinks: Bool
+    public var rewrites: [RewriteRule]
 
     public init(version: Int = RulesConfig.currentVersion, destinations: [Destination], defaultDestination: DestinationID,
                 accountMap: [String: DestinationID] = [:], sourceRules: [SourceRule] = [], askHosts: [String] = RulesConfig.defaultAskHosts,
-                openInApps: Bool = false, cleanLinks: Bool = true) {
+                openInApps: Bool = false, cleanLinks: Bool = true, rewrites: [RewriteRule] = []) {
         self.version = version
         self.destinations = destinations
         self.defaultDestination = defaultDestination
@@ -56,6 +57,7 @@ public struct RulesConfig: Codable, Equatable, Sendable {
         self.askHosts = askHosts
         self.openInApps = openInApps
         self.cleanLinks = cleanLinks
+        self.rewrites = rewrites
     }
 
     public init(from decoder: Decoder) throws {
@@ -68,6 +70,7 @@ public struct RulesConfig: Codable, Equatable, Sendable {
         askHosts = try c.decodeIfPresent([String].self, forKey: .askHosts) ?? RulesConfig.defaultAskHosts
         openInApps = try c.decodeIfPresent(Bool.self, forKey: .openInApps) ?? false
         cleanLinks = try c.decodeIfPresent(Bool.self, forKey: .cleanLinks) ?? true
+        rewrites = try c.decodeIfPresent([RewriteRule].self, forKey: .rewrites) ?? []
     }
 
     public func destination(_ id: DestinationID) -> Destination? {

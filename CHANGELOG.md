@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.0
+
+- Rewrite links: swap a site for another before it opens, like x.com to xcancel.com or reddit.com to old.reddit.com (Settings → General).
+- Export and import your settings as a JSON file, or show it in Finder to keep it in your dotfiles. Importing backs up your current settings first.
+- Settings → Test a link shows the link as it will open, after rewrites and tracking removal.
+
 ## 1.4.0
 
 - Settings is now a native macOS settings window with a toolbar.

@@ -45,6 +45,16 @@ struct GeneralTab: View {
         Form {
             Section { statusRows }
             Section { toggles }
+            Section {
+                RewritesSection(state: state)
+            } header: {
+                Text("Rewrite links")
+            } footer: {
+                Text("Swap one site for another before a link opens, like x.com to xcancel.com or reddit.com to old.reddit.com. Subdomains count too.")
+                    .font(.caption).foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            Section { SettingsFileSection(state: state) }
             if Updater.isSupported {
                 Section { UpdatesSection() }
             }
@@ -431,9 +441,9 @@ struct TestTab: View {
             .font(.callout)
 
             if let parsed {
-                let cleaned = state.rules.cleanLinks ? LinkCleaner.clean(parsed) : parsed
+                let cleaned = state.rules.prepare(parsed)
                 if cleaned != parsed {
-                    Label("Tracking removed: \(cleaned.absoluteString)", systemImage: "wand.and.rays")
+                    Label("Opens as \(cleaned.absoluteString)", systemImage: "wand.and.rays")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -665,5 +675,109 @@ struct UpdatesSection: View {
         case .installing(let message): message
         case .failed(let message): message
         }
+    }
+}
+
+struct RewritesSection: View {
+    @ObservedObject var state: AppState
+    @State private var from = ""
+    @State private var to = ""
+
+    private var candidate: RewriteRule? { RewriteRule.make(from: from, to: to) }
+
+    var body: some View {
+        ForEach(state.rules.rewrites, id: \.self) { rule in
+            HStack {
+                Text(rule.from)
+                Image(systemName: "arrow.right").foregroundStyle(.secondary)
+                Text(rule.to)
+                Spacer()
+                Button(role: .destructive) { remove(rule) } label: { Image(systemName: "minus.circle") }
+                    .buttonStyle(.borderless)
+                    .help("Remove this rewrite")
+            }
+        }
+        HStack {
+            TextField("Site", text: $from, prompt: Text("reddit.com"))
+                .labelsHidden()
+            Image(systemName: "arrow.right").foregroundStyle(.secondary)
+            TextField("Becomes", text: $to, prompt: Text("old.reddit.com"))
+                .labelsHidden()
+                .onSubmit(add)
+            Button("Add", action: add)
+                .disabled(candidate == nil || state.rules.rewrites.contains { $0.from == candidate?.from })
+        }
+    }
+
+    private func add() {
+        guard let rule = candidate, !state.rules.rewrites.contains(where: { $0.from == rule.from }) else { return }
+        var rules = state.rules
+        rules.rewrites.append(rule)
+        state.updateRules(rules)
+        from = ""
+        to = ""
+    }
+
+    private func remove(_ rule: RewriteRule) {
+        var rules = state.rules
+        rules.rewrites.removeAll { $0 == rule }
+        state.updateRules(rules)
+    }
+}
+
+struct SettingsFileSection: View {
+    @ObservedObject var state: AppState
+    @State private var message: String?
+    @State private var failed = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Settings file")
+                    Text("Your destinations and rules in one JSON file, to back up, keep in your dotfiles or move to another Mac.")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button("Export…", action: export)
+                Button("Import…", action: importFile)
+                Button("Show in Finder") { NSWorkspace.shared.activateFileViewerSelecting([Paths.rules]) }
+                    .disabled(!FileManager.default.fileExists(atPath: Paths.rules.path))
+            }
+            if let message {
+                Text(message).font(.caption).foregroundStyle(failed ? .red : .secondary)
+            }
+        }
+    }
+
+    private func export() {
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = "detour-settings.json"
+        panel.allowedContentTypes = [.json]
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            try state.exportRules(to: url)
+            report("Exported to \(url.lastPathComponent).", failed: false)
+        } catch {
+            report("Export failed: \(error.localizedDescription)", failed: true)
+        }
+    }
+
+    private func importFile() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.json]
+        panel.allowsMultipleSelection = false
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            try state.importRules(from: url)
+            report("Imported \(state.destinations.count) destinations. Your previous settings were backed up next to rules.json.", failed: false)
+        } catch {
+            report("Import failed: \(error.localizedDescription)", failed: true)
+        }
+    }
+
+    private func report(_ text: String, failed: Bool) {
+        message = text
+        self.failed = failed
     }
 }

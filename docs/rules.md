@@ -17,7 +17,7 @@ For every link, Detour walks through these steps and stops at the first one that
 9. **Ask.** Detour shows the picker when it has some evidence but nothing clear: sites in the ask list (Gmail, Google Docs and similar), sites you opened in more than one place without a clear favourite, and sites you visited only a few times (fewer than 5) in the last 90 days.
 10. **Default.** Everything else opens in your default destination.
 
-Before any of this, Detour removes tracking parameters (`utm_…`, `fbclid`, `gclid` and similar) from the link, unless you turned that off.
+Before any of this, Detour applies your rewrites (Settings → General → Rewrite links), so `x.com` can become `xcancel.com` and the new site is what gets routed. Then it removes tracking parameters (`utm_…`, `fbclid`, `gclid` and similar), unless you turned that off.
 
 ## Patterns
 
@@ -77,6 +77,10 @@ Hosts are compared in lowercase, without `www.` and without a trailing dot.
     { "app": "Slack", "target": "google-chrome-profile-1", "strength": "whenUnsure" },
     { "app": "Ferdium", "titleContains": "WhatsApp", "target": "google-chrome-default", "strength": "tieBreaker" }
   ],
+  "rewrites": [
+    { "from": "x.com", "to": "xcancel.com" },
+    { "from": "reddit.com", "to": "old.reddit.com" }
+  ],
   "cleanLinks": true,
   "openInApps": false
 }
@@ -87,7 +91,12 @@ Hosts are compared in lowercase, without `www.` and without a trailing dot.
 - `accountMap` keys are a full email address or a domain. A full address wins over its domain.
 - `sourceRules` match the app name you clicked in, and optionally part of its window title (needs Accessibility). `strength` is `always`, `whenUnsure` (new and unclear sites) or `tieBreaker` (only sites used in several places). Rules without a strength are tie-breakers.
 - Add `"privateWindow": true` to a Chrome-family or Firefox destination to open its links in an incognito or private window.
-- `cleanLinks` removes tracking parameters. `openInApps` opens Zoom, Teams and Slack links in their desktop apps when installed.
+- `rewrites` swap the site of a link before it opens. `from` matches the site and its subdomains, `to` replaces the whole host and keeps the path, query and fragment. The first matching rewrite wins.
+- `cleanLinks` removes tracking parameters. `openInApps` opens Zoom, Teams, Slack, Spotify, Music, Discord, Linear and Notion links in their desktop apps when installed.
+
+## Keeping your settings in dotfiles
+
+Settings → General → Settings file can export `rules.json` to any place you like and import it again, for example on a new Mac. Importing backs up your current file as `rules.before-import-<date>.json` first. Because Detour picks up changes to `rules.json` as soon as you save it, you can also symlink it from your dotfiles repository.
 
 ## Other files
 

@@ -36,7 +36,8 @@ Detour sits between your apps and your browsers and decides for you. Work links 
 - **Understands Google links.** Calendar invites and `authuser` links carry an email address, and Docs you opened before are remembered per profile.
 - **Knows where you clicked.** Send links from Slack or Teams to work and from Messages to personal, or let Detour learn that from your own clicks.
 - **Workspace aware.** `github.com/your-company` and `github.com/you` can go to different profiles, same for GitLab, Notion, Linear, Vercel and Figma teams.
-- **Cleaner links.** Removes tracking parameters, can open Zoom, Teams and Slack links in their apps, and can send a destination to a private window.
+- **Cleaner links.** Removes tracking parameters, rewrites sites you prefer another front end for (x.com to xcancel.com, reddit.com to old.reddit.com), can open Zoom, Teams, Slack, Spotify and more in their apps, and can send a destination to a private window.
+- **Settings as a file.** Export and import your setup as one JSON file, or keep it in your dotfiles.
 - **Asks only when unsure**, with a small picker at your cursor. Press 1 to 9 to choose. Hold ⌥ while clicking to always choose yourself.
 - **Easy to correct.** The menu bar shows your last links. "Open in…" sends one elsewhere and remembers it.
 - **Smart start.** Setup suggests rules from your history, so it works well from the first click.

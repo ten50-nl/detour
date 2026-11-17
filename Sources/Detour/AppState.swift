@@ -84,7 +84,7 @@ final class AppState: ObservableObject {
     func handle(_ original: LinkContext) {
         if rulesDetector.hasChanged() { reloadRules() }
         var ctx = original
-        if engine.rules.cleanLinks { ctx.url = LinkCleaner.clean(ctx.url) }
+        ctx.url = engine.rules.prepare(ctx.url)
         let decision = engine.decide(ctx)
         if decision.stage == .app, let appURL = decision.appURL {
             addRecent(RecentLink(url: ctx.url, date: Date(), sourceApp: ctx.sourceApp, decision: decision, opened: nil))
@@ -171,6 +171,19 @@ final class AppState: ObservableObject {
         }
         rulesError = nil
         checkProfiles()
+    }
+
+    func exportRules(to url: URL) throws {
+        try ConfigLoader.save(rules, to: url)
+    }
+
+    func importRules(from url: URL) throws {
+        let imported = try ConfigLoader.importRules(from: Data(contentsOf: url))
+        if FileManager.default.fileExists(atPath: Paths.rules.path) {
+            let stamp = ISO8601DateFormatter().string(from: Date()).replacingOccurrences(of: ":", with: "-")
+            try? FileManager.default.copyItem(at: Paths.rules, to: Paths.support.appendingPathComponent("rules.before-import-\(stamp).json"))
+        }
+        updateRules(imported)
     }
 
     func markOnboardingDone() {
