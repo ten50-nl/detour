@@ -30,7 +30,7 @@ Detour sits between your apps and your browsers and decides for you. Work links 
 ## Features
 
 - **Routes to browser profiles**, not just browsers: Chrome, Brave, Edge, Vivaldi and Chromium profiles, plus Firefox, Safari, Arc or any other browser as a whole.
-- **Learns from your history.** If you open a site in your work profile 95% of the time, Detour already knows where it belongs.
+- **Learns from your history** in Chrome-family browsers, Firefox and Safari. If you open a site in your work profile 95% of the time, Detour already knows where it belongs.
 - **Understands Google links.** Calendar invites and `authuser` links carry an email address, and Docs you opened before are remembered per profile.
 - **Asks only when unsure**, with a small picker at your cursor. Press 1 to 9 to choose. Hold ⌥ while clicking to always choose yourself.
 - **Easy to correct.** The menu bar shows your last links. "Open in…" sends one elsewhere and remembers it.

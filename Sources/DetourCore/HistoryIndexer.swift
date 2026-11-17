@@ -1,7 +1,7 @@
 import Foundation
 
 public struct HistorySource: Sendable {
-    public enum Kind: Sendable { case chrome, firefox }
+    public enum Kind: Sendable { case chrome, firefox, safari }
 
     public var target: DestinationID
     public var kind: Kind
@@ -54,6 +54,11 @@ public struct HistoryIndexer: Sendable {
                     dbPath: copy,
                     sql: "SELECT p.url FROM moz_historyvisits v JOIN moz_places p ON p.id = v.place_id WHERE v.visit_date > ?",
                     bind: Int64(since * 1_000_000))
+            case .safari:
+                urls = try SQLiteReader.strings(
+                    dbPath: copy,
+                    sql: "SELECT i.url FROM history_visits v JOIN history_items i ON i.id = v.history_item WHERE v.visit_time > ?",
+                    bind: Int64(since - Date.timeIntervalBetween1970AndReferenceDate))
             }
             for raw in urls {
                 guard let url = URL(string: raw), let host = normalizedHost(url) else { continue }

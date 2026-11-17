@@ -55,6 +55,25 @@ private func makeDB(_ path: URL, schema: String, inserts: [String]) throws {
         #expect(index.hostVerdict("my.hosting.com") == .confident("work", share: 1.0, total: 6))
     }
 
+    @Test func buildsFromSafari() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let now = Date()
+        let recent = now.addingTimeInterval(-86_400).timeIntervalSinceReferenceDate
+        let old = now.addingTimeInterval(-100 * 86_400).timeIntervalSinceReferenceDate
+        let db = dir.appendingPathComponent("History.db")
+        var inserts = [
+            "INSERT INTO history_items (id, url) VALUES (1, 'https://www.apple.com/mac/')",
+            "INSERT INTO history_items (id, url) VALUES (2, 'https://old.example/')",
+        ]
+        for i in 0..<5 { inserts.append("INSERT INTO history_visits (id, history_item, visit_time) VALUES (\(i + 1), 1, \(recent))") }
+        inserts.append("INSERT INTO history_visits (id, history_item, visit_time) VALUES (10, 2, \(old))")
+        try makeDB(db, schema: "CREATE TABLE history_items (id INTEGER PRIMARY KEY, url TEXT); CREATE TABLE history_visits (id INTEGER PRIMARY KEY, history_item INTEGER, visit_time REAL);", inserts: inserts)
+        let index = try HistoryIndexer(cacheDir: dir.appendingPathComponent("cache")).build(sources: [HistorySource(target: "safari", kind: .safari, dbPath: db)], now: now)
+        #expect(index.hosts["apple.com"] == ["safari": 5])
+        #expect(index.hosts["old.example"] == nil)
+    }
+
     @Test func missingSourceIsSkipped() throws {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         let indexer = HistoryIndexer(cacheDir: dir)

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+- Learns from your Safari history too, so Safari counts as a destination in history, suggestions and Smart start.
+
 ## 1.0.0
 
 First public release.
