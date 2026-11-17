@@ -5,6 +5,11 @@ enum AppLinkApps {
         "Zoom": ["us.zoom.xos"],
         "Microsoft Teams": ["com.microsoft.teams2", "com.microsoft.teams"],
         "Slack": ["com.tinyspeck.slackmacgap"],
+        "Spotify": ["com.spotify.client"],
+        "Music": ["com.apple.Music"],
+        "Discord": ["com.hnc.Discord"],
+        "Linear": ["com.linear"],
+        "Notion": ["notion.id"],
     ]
 
     static func installed() -> Set<String> {

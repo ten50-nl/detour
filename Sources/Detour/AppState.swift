@@ -248,7 +248,7 @@ final class AppState: ObservableObject {
         for dest in destinations {
             if let dir = dest.profileDir, let root = ChromiumFamily.supportDir(for: dest.bundleID, appSupport: Paths.appSupport) {
                 sources.append(HistorySource(target: dest.id, kind: .chrome, dbPath: root.appendingPathComponent(dir).appendingPathComponent("History")))
-            } else if dest.bundleID == "com.apple.Safari" {
+            } else if dest.bundleID == "com.apple.Safari", !Paths.isAppStore {
                 sources.append(HistorySource(target: dest.id, kind: .safari, dbPath: Paths.home.appendingPathComponent("Library/Safari/History.db")))
             } else if dest.bundleID == "org.mozilla.firefox",
                       let ini = try? String(contentsOf: Paths.firefoxRoot.appendingPathComponent("profiles.ini"), encoding: .utf8),

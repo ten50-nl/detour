@@ -55,7 +55,10 @@ final class Updater: ObservableObject {
         }
     }
 
+    static var isSupported: Bool { !Paths.isAppStore }
+
     func start() {
+        guard Self.isSupported else { return }
         selfTestIfRequested()
         timer = Timer.scheduledTimer(withTimeInterval: 3600, repeats: true) { _ in
             Task { @MainActor in Updater.shared.checkIfDue() }
@@ -64,7 +67,7 @@ final class Updater: ObservableObject {
     }
 
     func checkIfDue() {
-        guard enabled, !Paths.isIsolated, !BrowserScanner.isDemo else { return }
+        guard Self.isSupported, enabled, !Paths.isIsolated, !BrowserScanner.isDemo else { return }
         let last = UserDefaults.standard.object(forKey: Self.lastCheckKey) as? Date
         guard UpdateCheck.isDue(lastCheck: last, now: Date()) else { return }
         check(userInitiated: false)

@@ -1,0 +1,52 @@
+name: Detour
+options:
+  bundleIdPrefix: nl.ten50
+  deploymentTarget:
+    macOS: "15.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "1.4.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: 8N4S5S7978
+    PRODUCT_BUNDLE_IDENTIFIER: nl.ten50.detour
+    PRODUCT_NAME: Detour
+    ENABLE_HARDENED_RUNTIME: YES
+    COMBINE_HIDPI_IMAGES: YES
+    DEAD_CODE_STRIPPING: YES
+packages:
+  DetourPackage:
+    path: .
+targets:
+  Detour:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/Detour
+      - path: Resources/AppIcon.icns
+        buildPhase: resources
+    dependencies:
+      - package: DetourPackage
+        product: DetourCore
+    settings:
+      base:
+        INFOPLIST_FILE: Resources/Info.plist
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: "Developer ID Application"
+  Detour (App Store):
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/Detour
+      - path: Resources/AppIcon.icns
+        buildPhase: resources
+    dependencies:
+      - package: DetourPackage
+        product: DetourCore
+    settings:
+      base:
+        INFOPLIST_FILE: Resources/Info-AppStore.plist
+        CODE_SIGN_ENTITLEMENTS: Resources/Detour-AppStore.entitlements
+        CODE_SIGN_STYLE: Automatic
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: MAS

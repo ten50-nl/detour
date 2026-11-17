@@ -6,12 +6,14 @@ let routingLog = Logger(subsystem: "nl.ten50.detour", category: "routing")
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    static weak var current: AppDelegate?
     let state = AppState()
     var menuBar: MenuBarController?
     var settings: SettingsWindowController?
     var onboarding: OnboardingWindowController?
 
     func applicationWillFinishLaunching(_ notification: Notification) {
+        AppDelegate.current = self
         SourceContext.startTracking()
         NSAppleEventManager.shared().setEventHandler(
             self,

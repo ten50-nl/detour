@@ -29,7 +29,7 @@ final class PickerPanel: NSObject, NSWindowDelegate {
         model = PickerModel(host: host, reason: decision.reason, selected: decision.target, destinations: Array(destinations.prefix(RulesConfig.maxDestinations)),
                             rememberLabel: isFile ? "Remember for this file" : "Remember for \(PathKey.key(for: url) ?? host)")
         panel = KeyablePanel(contentRect: NSRect(x: 0, y: 0, width: 420, height: 180),
-                             styleMask: [.nonactivatingPanel, .titled, .fullSizeContentView],
+                             styleMask: [.nonactivatingPanel, .borderless],
                              backing: .buffered, defer: false)
         super.init()
         model.choose = { [weak self] target in self?.finish(target) }
@@ -42,8 +42,22 @@ final class PickerPanel: NSObject, NSWindowDelegate {
         panel.isReleasedWhenClosed = false
         panel.delegate = self
         let hosting = NSHostingView(rootView: PickerView(model: model))
-        panel.contentView = hosting
-        panel.setContentSize(hosting.fittingSize)
+        let size = hosting.fittingSize
+        let glass = NSVisualEffectView(frame: NSRect(origin: .zero, size: size))
+        glass.material = .popover
+        glass.blendingMode = .behindWindow
+        glass.state = .active
+        glass.wantsLayer = true
+        glass.layer?.cornerRadius = 16
+        glass.layer?.masksToBounds = true
+        hosting.frame = glass.bounds
+        hosting.autoresizingMask = [.width, .height]
+        glass.addSubview(hosting)
+        panel.isOpaque = false
+        panel.backgroundColor = .clear
+        panel.hasShadow = true
+        panel.contentView = glass
+        panel.setContentSize(size)
     }
 
     private func present() {

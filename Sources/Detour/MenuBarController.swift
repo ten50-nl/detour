@@ -56,7 +56,9 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         }
         menu.addItem(action("Rebuild history index", #selector(rebuild)))
         menu.addItem(action("Set up again…", #selector(setup)))
-        menu.addItem(action("Check for updates", #selector(checkUpdates)))
+        if Updater.isSupported {
+            menu.addItem(action("Check for updates", #selector(checkUpdates)))
+        }
         menu.addItem(action("Settings…", #selector(settings), key: ","))
         menu.addItem(.separator())
         menu.addItem(action("Quit Detour", #selector(quit), key: "q"))
@@ -66,10 +68,12 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         let host = normalizedHost(link.url) ?? link.url.absoluteString
         let where_ = link.opened.map { state.label($0) } ?? "not opened"
         let item = NSMenuItem(title: "\(host)  →  \(where_)", action: nil, keyEquivalent: "")
+        if let opened = link.opened, let dest = state.rules.destination(opened) { item.image = Self.icon(for: dest) }
         item.toolTip = "\(link.url.absoluteString)\n\(link.decision.reason)\(link.sourceApp.map { "\nfrom \($0)" } ?? "")"
         let sub = NSMenu()
         for dest in state.destinations {
             let open = NSMenuItem(title: "Open in \(state.label(dest.id))", action: #selector(reopen(_:)), keyEquivalent: "")
+            open.image = Self.icon(for: dest)
             open.target = self
             open.representedObject = ReopenRequest(id: link.id, url: link.url, target: dest.id)
             if link.opened == dest.id { open.state = .on }
@@ -82,6 +86,22 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         sub.addItem(copy)
         item.submenu = sub
         return item
+    }
+
+    static func icon(for dest: Destination) -> NSImage {
+        let base = NSWorkspace.shared.icon(forFile: dest.appPath)
+        let size = NSSize(width: 16, height: 16)
+        return NSImage(size: size, flipped: false) { rect in
+            base.draw(in: rect)
+            if dest.isProfile || dest.privateWindow {
+                let dot = NSRect(x: rect.maxX - 7, y: rect.minY, width: 7, height: 7)
+                NSColor.windowBackgroundColor.setFill()
+                NSBezierPath(ovalIn: dot.insetBy(dx: -1, dy: -1)).fill()
+                NSColor(hex: dest.color).setFill()
+                NSBezierPath(ovalIn: dot).fill()
+            }
+            return true
+        }
     }
 
     private func disabled(_ title: String) -> NSMenuItem {

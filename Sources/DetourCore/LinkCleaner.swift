@@ -52,6 +52,33 @@ public enum AppLinks {
         if host == "app.slack.com", parts.count >= 3, parts[0] == "client" {
             return URL(string: "slack://channel?team=\(parts[1])&id=\(parts[2])").map { AppLink(app: "Slack", url: $0) }
         }
+
+        let spotifyTypes: Set<String> = ["track", "album", "playlist", "artist", "episode", "show"]
+        if host == "open.spotify.com", parts.count >= 2 {
+            let offset = parts[0].hasPrefix("intl-") ? 1 : 0
+            if parts.count >= offset + 2, spotifyTypes.contains(parts[offset]) {
+                return URL(string: "spotify:\(parts[offset]):\(parts[offset + 1])").map { AppLink(app: "Spotify", url: $0) }
+            }
+        }
+
+        if host == "music.apple.com", parts.count >= 2 {
+            return URL(string: "music://music.apple.com\(url.path(percentEncoded: true))").map { AppLink(app: "Music", url: $0) }
+        }
+
+        if host == "discord.com", parts.count >= 3, parts[0] == "channels" {
+            return URL(string: "discord://-\(url.path(percentEncoded: true))").map { AppLink(app: "Discord", url: $0) }
+        }
+        if host == "discord.gg", parts.count == 1 {
+            return URL(string: "discord://-/invite/\(parts[0])").map { AppLink(app: "Discord", url: $0) }
+        }
+
+        if host == "linear.app", parts.count >= 3, ["issue", "project", "view", "team"].contains(parts[1]) {
+            return URL(string: "linear:/\(url.path(percentEncoded: true))").map { AppLink(app: "Linear", url: $0) }
+        }
+
+        if host == "notion.so", parts.count >= 1, !["login", "signup", "product", "pricing", "help"].contains(parts[0]) {
+            return URL(string: "notion://www.notion.so\(url.path(percentEncoded: true))").map { AppLink(app: "Notion", url: $0) }
+        }
         return nil
     }
 }

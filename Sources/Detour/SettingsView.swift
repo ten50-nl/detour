@@ -10,23 +10,6 @@ enum Links {
     static let rulesDocs = URL(string: "https://github.com/ten50-nl/detour/blob/main/docs/rules.md")!
 }
 
-struct SettingsView: View {
-    @ObservedObject var state: AppState
-    @State private var tab = ProcessInfo.processInfo.environment["DETOUR_SETTINGS_TAB"] ?? "general"
-
-    var body: some View {
-        TabView(selection: $tab) {
-            GeneralTab(state: state).tabItem { Label("General", systemImage: "gearshape") }.tag("general")
-            DestinationsTab(state: state).tabItem { Label("Destinations", systemImage: "arrow.triangle.branch") }.tag("destinations")
-            AppsTab(state: state).tabItem { Label("Apps", systemImage: "app.badge") }.tag("apps")
-            LearnedTab(state: state).tabItem { Label("Learned", systemImage: "brain") }.tag("learned")
-            TestTab(state: state).tabItem { Label("Test a link", systemImage: "magnifyingglass") }.tag("test")
-        }
-        .padding(20)
-        .frame(minWidth: 680, minHeight: 520)
-    }
-}
-
 struct StatusRow: View {
     let ok: Bool
     let title: String
@@ -48,7 +31,7 @@ struct StatusRow: View {
     }
 }
 
-private struct GeneralTab: View {
+struct GeneralTab: View {
     @ObservedObject var state: AppState
     @AppStorage(MenuBarController.showIconKey) private var showIcon = true
     @State private var isDefault = Permissions.isDefaultBrowser
@@ -62,7 +45,9 @@ private struct GeneralTab: View {
         Form {
             Section { statusRows }
             Section { toggles }
-            Section { UpdatesSection() }
+            if Updater.isSupported {
+                Section { UpdatesSection() }
+            }
             Section { about }
             if let error {
                 Text(error).foregroundStyle(.red).font(.caption)
@@ -76,8 +61,10 @@ private struct GeneralTab: View {
         StatusRow(ok: isDefault, title: "Default browser", detail: isDefault ? "Links from other apps go through Detour." : "macOS still sends links to another app.",
                   actionTitle: isDefault ? nil : "Make default browser", action: makeDefault)
         StatusRow(ok: fda, title: "Full Disk Access", detail: historyDetail, actionTitle: fda ? "Rebuild index" : "Open privacy settings", action: fdaAction)
-        StatusRow(ok: ax, title: "Accessibility", detail: ax ? "Window titles of the app you click in help as a tie-breaker." : "Optional. Lets Detour tell which chat inside an all-in-one messenger a link came from.",
-                  actionTitle: ax ? nil : "Allow", action: { Permissions.requestAccessibility() })
+        if !Paths.isAppStore {
+            StatusRow(ok: ax, title: "Accessibility", detail: ax ? "Window titles of the app you click in help as a tie-breaker." : "Optional. Lets Detour tell which chat inside an all-in-one messenger a link came from.",
+                      actionTitle: ax ? nil : "Allow", action: { Permissions.requestAccessibility() })
+        }
         ForEach(state.profileWarnings.keys.sorted(), id: \.self) { id in
             StatusRow(ok: false, title: "Profile for \(state.label(id))", detail: state.profileWarnings[id] ?? "")
         }
@@ -88,7 +75,14 @@ private struct GeneralTab: View {
 
     @ViewBuilder private var toggles: some View {
         Toggle("Remove tracking parameters from links", isOn: ruleBinding(\.cleanLinks))
-        Toggle("Open Zoom, Teams and Slack links in their apps", isOn: ruleBinding(\.openInApps))
+        Toggle(isOn: ruleBinding(\.openInApps)) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Open links in their own apps")
+                Text("Zoom, Teams, Slack, Spotify, Music, Discord, Linear and Notion, when the app is installed.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
         Toggle("Open at login", isOn: $loginItem)
             .onChange(of: loginItem) { _, on in setLogin(on) }
             .disabled(!Permissions.canUseLoginItem)
@@ -148,7 +142,7 @@ private struct GeneralTab: View {
     }
 }
 
-private struct DestinationsTab: View {
+struct DestinationsTab: View {
     @ObservedObject var state: AppState
     @State private var draft: RulesConfig = .empty
     @State private var selection: DestinationID?
@@ -353,7 +347,7 @@ struct DestinationRow: View {
     }
 }
 
-private struct LearnedTab: View {
+struct LearnedTab: View {
     @ObservedObject var state: AppState
 
     private struct Row: Identifiable {
@@ -397,7 +391,7 @@ private struct LearnedTab: View {
     }
 }
 
-private struct TestTab: View {
+struct TestTab: View {
     @ObservedObject var state: AppState
     @State private var url = ProcessInfo.processInfo.environment["DETOUR_TEST_URL"] ?? ""
     @State private var app = ""
@@ -506,7 +500,7 @@ private struct TestTab: View {
     }
 }
 
-private struct AppsTab: View {
+struct AppsTab: View {
     @ObservedObject var state: AppState
     @State private var draft: [SourceRule] = []
     @State private var dirty = false

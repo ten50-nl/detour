@@ -108,3 +108,25 @@ import Testing
         #expect(d.privateWindow == false)
     }
 }
+
+@Suite struct MoreAppLinkTests {
+    @Test(arguments: [
+        ("https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC?si=abc", "Spotify", "spotify:track:4uLU6hMCjMI75M1A2tKUQC"),
+        ("https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M", "Spotify", "spotify:playlist:37i9dQZF1DXcBWIGoYBM5M"),
+        ("https://music.apple.com/nl/album/abbey-road/1441164426", "Music", "music://music.apple.com/nl/album/abbey-road/1441164426"),
+        ("https://discord.com/channels/123/456", "Discord", "discord://-/channels/123/456"),
+        ("https://discord.gg/abcDEF", "Discord", "discord://-/invite/abcDEF"),
+        ("https://linear.app/acme/issue/ENG-12/fix-it", "Linear", "linear://acme/issue/ENG-12/fix-it"),
+        ("https://www.notion.so/acme/Roadmap-0123456789abcdef", "Notion", "notion://www.notion.so/acme/Roadmap-0123456789abcdef"),
+    ])
+    func converts(url: String, app: String, expected: String) {
+        let link = AppLinks.convert(URL(string: url)!)
+        #expect(link?.app == app)
+        #expect(link?.url.absoluteString == expected)
+    }
+
+    @Test(arguments: ["https://open.spotify.com/", "https://linear.app/", "https://linear.app/login", "https://www.notion.so/", "https://discord.com/", "https://music.apple.com/"])
+    func ignoresNonContentPages(url: String) {
+        #expect(AppLinks.convert(URL(string: url)!) == nil)
+    }
+}

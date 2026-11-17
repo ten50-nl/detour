@@ -1,0 +1,623 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02BA91E66182F151C1DE65A4 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71ABCD100BA25FCFF127D7C /* OnboardingView.swift */; };
+		035BCCB83D27E26CE688DBE7 /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305EB9DED7C07E9848C11E5E /* PickerView.swift */; };
+		046596AB2B48BF502E9ACC94 /* PickerPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDB7324822D35889C55C3E9 /* PickerPanel.swift */; };
+		084B3559CAEDA66ABAA87B63 /* Paths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4756CA4AB456A087A872B83B /* Paths.swift */; };
+		0CBA7087FAF0BBA6E45FE4A2 /* OnboardingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D4FD20E8E62D9E8AB1D1DD /* OnboardingModel.swift */; };
+		14237FB8B43C4E25BBFF7AAB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5C3B99D8BC335A60642EA8 /* AppDelegate.swift */; };
+		22502EA1F11542BC0B7D98FE /* AppLinkApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EEC482D3B77172DD7B72B49 /* AppLinkApps.swift */; };
+		28C688E1CB3552F11319BB2B /* Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38739426E28AC185957763A6 /* Permissions.swift */; };
+		2D12A48F9E41CC7941C71781 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECEF15CCD3C259F9D444E78 /* Color+Hex.swift */; };
+		2EB0A2EFDC72EE3D77FC6774 /* DestinationOpener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749539823490BA27C80ED0B3 /* DestinationOpener.swift */; };
+		2F31D968F6D8BFFDBCC59B68 /* DetourGlyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4CE94396D36AC5DAEF880EE /* DetourGlyph.swift */; };
+		318205907CDE7FBD9A05054D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5C3B99D8BC335A60642EA8 /* AppDelegate.swift */; };
+		40F3BAE66A07FA9AD368D255 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECEF15CCD3C259F9D444E78 /* Color+Hex.swift */; };
+		444A659D4A47E2A050EAD247 /* SourceContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F3252B43950C905F3E5077 /* SourceContext.swift */; };
+		47D90A6392EEB41017B645CF /* Updater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C521A19B583915EC6783ED6 /* Updater.swift */; };
+		496325C6DDC3524DCF225DBE /* DetourCore in Frameworks */ = {isa = PBXBuildFile; productRef = AF40077D3B5263B44F970D1C /* DetourCore */; };
+		4DF8CE9CCED15240868DAFE0 /* PickerPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDB7324822D35889C55C3E9 /* PickerPanel.swift */; };
+		4FC650049B4DA00CF6F419F0 /* InstalledApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 399C682ADC23BB9853C8E8EE /* InstalledApps.swift */; };
+		51E2B4FB0F26E3DD855D2EBE /* BrowserScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F30B49BE1F16A19773ACC2 /* BrowserScanner.swift */; };
+		51E6C23CB10E461226ED6AD5 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE6995CA229155EC87DA03D /* AppState.swift */; };
+		5EC5F47376DA567CCECF351E /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305EB9DED7C07E9848C11E5E /* PickerView.swift */; };
+		6405358619507BA30D3DA488 /* InstalledApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 399C682ADC23BB9853C8E8EE /* InstalledApps.swift */; };
+		65B7BCD005D990797C0D3A77 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 60896AC2040B3B9193F7542D /* AppIcon.icns */; };
+		6DD7352A725BCFE68B7FFBC6 /* DetourCore in Frameworks */ = {isa = PBXBuildFile; productRef = FCAE2734DAB07EB353C782D7 /* DetourCore */; };
+		7099E2A1947F47E32BE4A18D /* SettingsWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D086FE1D5FDC399CC778C691 /* SettingsWindow.swift */; };
+		80F94E6F7BAB10E6BA381EC0 /* DecisionLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1277B957FF4EDC58CD485FA /* DecisionLog.swift */; };
+		86B68649F7EC475C29B59860 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96413F311149617F0DC89E0 /* SettingsView.swift */; };
+		87782AC4148587077C9E0CAA /* OnboardingWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A170992961F555A1438BA23 /* OnboardingWindow.swift */; };
+		8DFA7ED61807C8E09BC8967C /* Updater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C521A19B583915EC6783ED6 /* Updater.swift */; };
+		8F0090D279BEFF3A063B583A /* SourceContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F3252B43950C905F3E5077 /* SourceContext.swift */; };
+		936CC5710534DEA20AE38AC1 /* Notifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F170D34E65DAE8DD7D4657 /* Notifier.swift */; };
+		9947CD7D26154B9ADFF473F5 /* BrowserScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F30B49BE1F16A19773ACC2 /* BrowserScanner.swift */; };
+		9FC00C3B05A4D334BB6DC8AE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96413F311149617F0DC89E0 /* SettingsView.swift */; };
+		A10923288E784FA1309A5D5E /* DetourGlyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4CE94396D36AC5DAEF880EE /* DetourGlyph.swift */; };
+		A1C877E905190CF03C596A2A /* Intents.swift in Sources */ = {isa = PBXBuildFile; fileRef = D099DA3AFA5258C216A19FFF /* Intents.swift */; };
+		A3B03C11235A64153169B68C /* AppLinkApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EEC482D3B77172DD7B72B49 /* AppLinkApps.swift */; };
+		AEFA302B45245BBCB2E2D476 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD453FA867DE5712FD54AA9 /* MenuBarController.swift */; };
+		B4805F983B73A0DF46352EEF /* OnboardingWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A170992961F555A1438BA23 /* OnboardingWindow.swift */; };
+		C0173A2E1065048CF09264E4 /* DecisionLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1277B957FF4EDC58CD485FA /* DecisionLog.swift */; };
+		C0183F452E7EEEF22AE1BC81 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE6995CA229155EC87DA03D /* AppState.swift */; };
+		C0F17AD2C2ED615EC5BE82B6 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71ABCD100BA25FCFF127D7C /* OnboardingView.swift */; };
+		C5AF1D42473A26881B5F4F2B /* Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38739426E28AC185957763A6 /* Permissions.swift */; };
+		CAD609B20FF828B7AC1DD5DB /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 60896AC2040B3B9193F7542D /* AppIcon.icns */; };
+		D15072358BE66568A7CE0C67 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6700AD77D2E916FC4EC197 /* main.swift */; };
+		D29072D370766D16CEC804B7 /* SettingsWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D086FE1D5FDC399CC778C691 /* SettingsWindow.swift */; };
+		D9948BD28DC511C86A93FE2D /* AppActivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E1D60C61C368EB4DBC92DE /* AppActivation.swift */; };
+		E0BBBF0DC7BC1751FC7D02D8 /* Intents.swift in Sources */ = {isa = PBXBuildFile; fileRef = D099DA3AFA5258C216A19FFF /* Intents.swift */; };
+		E79831EF996D8E0CF1165B0B /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD453FA867DE5712FD54AA9 /* MenuBarController.swift */; };
+		EAE3A86AB56ED14E90245F42 /* Paths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4756CA4AB456A087A872B83B /* Paths.swift */; };
+		EB18B051770F35CB9617C280 /* OnboardingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D4FD20E8E62D9E8AB1D1DD /* OnboardingModel.swift */; };
+		EF98033EFB47EC67952CCE6F /* AppActivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E1D60C61C368EB4DBC92DE /* AppActivation.swift */; };
+		EFE48296BA129448E1C0FE55 /* Notifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F170D34E65DAE8DD7D4657 /* Notifier.swift */; };
+		FB60574393ABD1D6C03F2A1F /* DestinationOpener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749539823490BA27C80ED0B3 /* DestinationOpener.swift */; };
+		FE834231878BDBD83BBFE8B4 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA6700AD77D2E916FC4EC197 /* main.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		01F30B49BE1F16A19773ACC2 /* BrowserScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserScanner.swift; sourceTree = "<group>"; };
+		22F3252B43950C905F3E5077 /* SourceContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceContext.swift; sourceTree = "<group>"; };
+		305EB9DED7C07E9848C11E5E /* PickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerView.swift; sourceTree = "<group>"; };
+		38739426E28AC185957763A6 /* Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permissions.swift; sourceTree = "<group>"; };
+		399C682ADC23BB9853C8E8EE /* InstalledApps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstalledApps.swift; sourceTree = "<group>"; };
+		3EE937B279AA77D941288450 /* Detour (App Store).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Detour (App Store).app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3EEC482D3B77172DD7B72B49 /* AppLinkApps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinkApps.swift; sourceTree = "<group>"; };
+		4756CA4AB456A087A872B83B /* Paths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paths.swift; sourceTree = "<group>"; };
+		4A170992961F555A1438BA23 /* OnboardingWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWindow.swift; sourceTree = "<group>"; };
+		51E1D60C61C368EB4DBC92DE /* AppActivation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppActivation.swift; sourceTree = "<group>"; };
+		58D4FD20E8E62D9E8AB1D1DD /* OnboardingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingModel.swift; sourceTree = "<group>"; };
+		5DDB7324822D35889C55C3E9 /* PickerPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerPanel.swift; sourceTree = "<group>"; };
+		60896AC2040B3B9193F7542D /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
+		6C521A19B583915EC6783ED6 /* Updater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Updater.swift; sourceTree = "<group>"; };
+		749539823490BA27C80ED0B3 /* DestinationOpener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationOpener.swift; sourceTree = "<group>"; };
+		8D5C3B99D8BC335A60642EA8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A71ABCD100BA25FCFF127D7C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		A7F170D34E65DAE8DD7D4657 /* Notifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifier.swift; sourceTree = "<group>"; };
+		AAE6995CA229155EC87DA03D /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		B1277B957FF4EDC58CD485FA /* DecisionLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionLog.swift; sourceTree = "<group>"; };
+		BCCD29FD2056D07670AA766D /* detour */ = {isa = PBXFileReference; lastKnownFileType = folder; name = detour; path = .; sourceTree = SOURCE_ROOT; };
+		BCD453FA867DE5712FD54AA9 /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
+		CECEF15CCD3C259F9D444E78 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
+		D086FE1D5FDC399CC778C691 /* SettingsWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindow.swift; sourceTree = "<group>"; };
+		D099DA3AFA5258C216A19FFF /* Intents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Intents.swift; sourceTree = "<group>"; };
+		D4CE94396D36AC5DAEF880EE /* DetourGlyph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetourGlyph.swift; sourceTree = "<group>"; };
+		E96413F311149617F0DC89E0 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		EF57F5AA71249753B4707C76 /* Detour.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Detour.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA6700AD77D2E916FC4EC197 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		29AE45AA58253681F810B739 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6DD7352A725BCFE68B7FFBC6 /* DetourCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		544F760FDD70D1E5CEEC577D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				496325C6DDC3524DCF225DBE /* DetourCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		00C3E2ED45EDD32F0852A47B /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				BCCD29FD2056D07670AA766D /* detour */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		1A633EA65FE7627CADA85C46 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3EE937B279AA77D941288450 /* Detour (App Store).app */,
+				EF57F5AA71249753B4707C76 /* Detour.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3AA11F04796F05BCB3265795 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				60896AC2040B3B9193F7542D /* AppIcon.icns */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		B108347570A243775DCD3E7F = {
+			isa = PBXGroup;
+			children = (
+				00C3E2ED45EDD32F0852A47B /* Packages */,
+				3AA11F04796F05BCB3265795 /* Resources */,
+				FB55715D8312C2834634A6C4 /* Sources */,
+				1A633EA65FE7627CADA85C46 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BD9E0BEA41D1A0A123CD27AD /* Detour */ = {
+			isa = PBXGroup;
+			children = (
+				51E1D60C61C368EB4DBC92DE /* AppActivation.swift */,
+				8D5C3B99D8BC335A60642EA8 /* AppDelegate.swift */,
+				3EEC482D3B77172DD7B72B49 /* AppLinkApps.swift */,
+				AAE6995CA229155EC87DA03D /* AppState.swift */,
+				01F30B49BE1F16A19773ACC2 /* BrowserScanner.swift */,
+				CECEF15CCD3C259F9D444E78 /* Color+Hex.swift */,
+				B1277B957FF4EDC58CD485FA /* DecisionLog.swift */,
+				749539823490BA27C80ED0B3 /* DestinationOpener.swift */,
+				D4CE94396D36AC5DAEF880EE /* DetourGlyph.swift */,
+				399C682ADC23BB9853C8E8EE /* InstalledApps.swift */,
+				D099DA3AFA5258C216A19FFF /* Intents.swift */,
+				FA6700AD77D2E916FC4EC197 /* main.swift */,
+				BCD453FA867DE5712FD54AA9 /* MenuBarController.swift */,
+				A7F170D34E65DAE8DD7D4657 /* Notifier.swift */,
+				4756CA4AB456A087A872B83B /* Paths.swift */,
+				38739426E28AC185957763A6 /* Permissions.swift */,
+				5DDB7324822D35889C55C3E9 /* PickerPanel.swift */,
+				305EB9DED7C07E9848C11E5E /* PickerView.swift */,
+				E96413F311149617F0DC89E0 /* SettingsView.swift */,
+				D086FE1D5FDC399CC778C691 /* SettingsWindow.swift */,
+				22F3252B43950C905F3E5077 /* SourceContext.swift */,
+				6C521A19B583915EC6783ED6 /* Updater.swift */,
+				CA340137E986B518E2DAC4E9 /* Onboarding */,
+			);
+			path = Detour;
+			sourceTree = "<group>";
+		};
+		CA340137E986B518E2DAC4E9 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				58D4FD20E8E62D9E8AB1D1DD /* OnboardingModel.swift */,
+				A71ABCD100BA25FCFF127D7C /* OnboardingView.swift */,
+				4A170992961F555A1438BA23 /* OnboardingWindow.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		FB55715D8312C2834634A6C4 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				BD9E0BEA41D1A0A123CD27AD /* Detour */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4A1D996F6AA6817ABC1C2ABE /* Detour (App Store) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC6A5ABA74EB3D4D23CDE3F0 /* Build configuration list for PBXNativeTarget "Detour (App Store)" */;
+			buildPhases = (
+				646C6FF6D6725BA786FFE758 /* Sources */,
+				75E709AC966FA12B14C15AE3 /* Resources */,
+				544F760FDD70D1E5CEEC577D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Detour (App Store)";
+			packageProductDependencies = (
+				AF40077D3B5263B44F970D1C /* DetourCore */,
+			);
+			productName = "Detour (App Store)";
+			productReference = 3EE937B279AA77D941288450 /* Detour (App Store).app */;
+			productType = "com.apple.product-type.application";
+		};
+		7F7F96C584BE7785F9643B43 /* Detour */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1C947E1F9C26D16AFBCDB919 /* Build configuration list for PBXNativeTarget "Detour" */;
+			buildPhases = (
+				7286C61A406483AB586748DC /* Sources */,
+				BBBE9A36E218D313DA98789E /* Resources */,
+				29AE45AA58253681F810B739 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Detour;
+			packageProductDependencies = (
+				FCAE2734DAB07EB353C782D7 /* DetourCore */,
+			);
+			productName = Detour;
+			productReference = EF57F5AA71249753B4707C76 /* Detour.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F8AF5EF0CC1543EB76B45C40 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					4A1D996F6AA6817ABC1C2ABE = {
+						DevelopmentTeam = 8N4S5S7978;
+						ProvisioningStyle = Automatic;
+					};
+					7F7F96C584BE7785F9643B43 = {
+						DevelopmentTeam = 8N4S5S7978;
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = D3095DC874CFE6A0924733B8 /* Build configuration list for PBXProject "Detour" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = B108347570A243775DCD3E7F;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AA4E304A6F2B2C22042B0ADD /* XCLocalSwiftPackageReference "." */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 1A633EA65FE7627CADA85C46 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7F7F96C584BE7785F9643B43 /* Detour */,
+				4A1D996F6AA6817ABC1C2ABE /* Detour (App Store) */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		75E709AC966FA12B14C15AE3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65B7BCD005D990797C0D3A77 /* AppIcon.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BBBE9A36E218D313DA98789E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CAD609B20FF828B7AC1DD5DB /* AppIcon.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		646C6FF6D6725BA786FFE758 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF98033EFB47EC67952CCE6F /* AppActivation.swift in Sources */,
+				318205907CDE7FBD9A05054D /* AppDelegate.swift in Sources */,
+				A3B03C11235A64153169B68C /* AppLinkApps.swift in Sources */,
+				51E6C23CB10E461226ED6AD5 /* AppState.swift in Sources */,
+				9947CD7D26154B9ADFF473F5 /* BrowserScanner.swift in Sources */,
+				2D12A48F9E41CC7941C71781 /* Color+Hex.swift in Sources */,
+				C0173A2E1065048CF09264E4 /* DecisionLog.swift in Sources */,
+				2EB0A2EFDC72EE3D77FC6774 /* DestinationOpener.swift in Sources */,
+				A10923288E784FA1309A5D5E /* DetourGlyph.swift in Sources */,
+				6405358619507BA30D3DA488 /* InstalledApps.swift in Sources */,
+				E0BBBF0DC7BC1751FC7D02D8 /* Intents.swift in Sources */,
+				E79831EF996D8E0CF1165B0B /* MenuBarController.swift in Sources */,
+				936CC5710534DEA20AE38AC1 /* Notifier.swift in Sources */,
+				EB18B051770F35CB9617C280 /* OnboardingModel.swift in Sources */,
+				C0F17AD2C2ED615EC5BE82B6 /* OnboardingView.swift in Sources */,
+				B4805F983B73A0DF46352EEF /* OnboardingWindow.swift in Sources */,
+				084B3559CAEDA66ABAA87B63 /* Paths.swift in Sources */,
+				C5AF1D42473A26881B5F4F2B /* Permissions.swift in Sources */,
+				4DF8CE9CCED15240868DAFE0 /* PickerPanel.swift in Sources */,
+				035BCCB83D27E26CE688DBE7 /* PickerView.swift in Sources */,
+				86B68649F7EC475C29B59860 /* SettingsView.swift in Sources */,
+				D29072D370766D16CEC804B7 /* SettingsWindow.swift in Sources */,
+				444A659D4A47E2A050EAD247 /* SourceContext.swift in Sources */,
+				47D90A6392EEB41017B645CF /* Updater.swift in Sources */,
+				FE834231878BDBD83BBFE8B4 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7286C61A406483AB586748DC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D9948BD28DC511C86A93FE2D /* AppActivation.swift in Sources */,
+				14237FB8B43C4E25BBFF7AAB /* AppDelegate.swift in Sources */,
+				22502EA1F11542BC0B7D98FE /* AppLinkApps.swift in Sources */,
+				C0183F452E7EEEF22AE1BC81 /* AppState.swift in Sources */,
+				51E2B4FB0F26E3DD855D2EBE /* BrowserScanner.swift in Sources */,
+				40F3BAE66A07FA9AD368D255 /* Color+Hex.swift in Sources */,
+				80F94E6F7BAB10E6BA381EC0 /* DecisionLog.swift in Sources */,
+				FB60574393ABD1D6C03F2A1F /* DestinationOpener.swift in Sources */,
+				2F31D968F6D8BFFDBCC59B68 /* DetourGlyph.swift in Sources */,
+				4FC650049B4DA00CF6F419F0 /* InstalledApps.swift in Sources */,
+				A1C877E905190CF03C596A2A /* Intents.swift in Sources */,
+				AEFA302B45245BBCB2E2D476 /* MenuBarController.swift in Sources */,
+				EFE48296BA129448E1C0FE55 /* Notifier.swift in Sources */,
+				0CBA7087FAF0BBA6E45FE4A2 /* OnboardingModel.swift in Sources */,
+				02BA91E66182F151C1DE65A4 /* OnboardingView.swift in Sources */,
+				87782AC4148587077C9E0CAA /* OnboardingWindow.swift in Sources */,
+				EAE3A86AB56ED14E90245F42 /* Paths.swift in Sources */,
+				28C688E1CB3552F11319BB2B /* Permissions.swift in Sources */,
+				046596AB2B48BF502E9ACC94 /* PickerPanel.swift in Sources */,
+				5EC5F47376DA567CCECF351E /* PickerView.swift in Sources */,
+				9FC00C3B05A4D334BB6DC8AE /* SettingsView.swift in Sources */,
+				7099E2A1947F47E32BE4A18D /* SettingsWindow.swift in Sources */,
+				8F0090D279BEFF3A063B583A /* SourceContext.swift in Sources */,
+				8DFA7ED61807C8E09BC8967C /* Updater.swift in Sources */,
+				D15072358BE66568A7CE0C67 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1BC61CD05359574C206FA8BA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Resources/Detour-AppStore.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = "Resources/Info-AppStore.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = MAS;
+			};
+			name = Debug;
+		};
+		46A42A85EE6F8669845235E2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		82CA1A76CD61250C67DABEB6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Resources/Detour-AppStore.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = "Resources/Info-AppStore.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = MAS;
+			};
+			name = Release;
+		};
+		8347AB6ACA1072E29C3EECCF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 8N4S5S7978;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.4.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.ten50.detour;
+				PRODUCT_NAME = Detour;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		C281509053FD6FD7533005F7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		D4B881A08CF8684C2AF09E0E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 8N4S5S7978;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.4.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.ten50.detour;
+				PRODUCT_NAME = Detour;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1C947E1F9C26D16AFBCDB919 /* Build configuration list for PBXNativeTarget "Detour" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C281509053FD6FD7533005F7 /* Debug */,
+				46A42A85EE6F8669845235E2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D3095DC874CFE6A0924733B8 /* Build configuration list for PBXProject "Detour" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8347AB6ACA1072E29C3EECCF /* Debug */,
+				D4B881A08CF8684C2AF09E0E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DC6A5ABA74EB3D4D23CDE3F0 /* Build configuration list for PBXNativeTarget "Detour (App Store)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1BC61CD05359574C206FA8BA /* Debug */,
+				82CA1A76CD61250C67DABEB6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		AA4E304A6F2B2C22042B0ADD /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AF40077D3B5263B44F970D1C /* DetourCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DetourCore;
+		};
+		FCAE2734DAB07EB353C782D7 /* DetourCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DetourCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = F8AF5EF0CC1543EB76B45C40 /* Project object */;
+}

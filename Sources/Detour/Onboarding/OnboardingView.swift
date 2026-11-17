@@ -356,6 +356,7 @@ private struct FinishingStep: View {
                 Toggle("Open Detour at login", isOn: $model.launchAtLogin)
                     .disabled(!Permissions.canUseLoginItem)
                 Toggle("Show the menu bar icon", isOn: $showIcon)
+                if Updater.isSupported {
                 Toggle(isOn: Binding(get: { Updater.shared.enabled }, set: { Updater.shared.enabled = $0 })) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Check for updates automatically")
@@ -364,6 +365,8 @@ private struct FinishingStep: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                }
+                if !Paths.isAppStore {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Accessibility (optional)")
@@ -377,6 +380,7 @@ private struct FinishingStep: View {
                     } else {
                         Button("Allow") { Permissions.requestAccessibility() }
                     }
+                }
                 }
             }
             .formStyle(.grouped)

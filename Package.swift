@@ -6,6 +6,7 @@ let package = Package(
     platforms: [.macOS(.v15)],
     products: [
         .executable(name: "Detour", targets: ["Detour"]),
+        .library(name: "DetourCore", targets: ["DetourCore"]),
     ],
     targets: [
         .target(

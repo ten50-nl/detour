@@ -3,7 +3,7 @@ import Foundation
 enum InstalledApps {
     static func names() -> [String] {
         let fm = FileManager.default
-        let dirs = ["/Applications", "/System/Applications", fm.homeDirectoryForCurrentUser.appendingPathComponent("Applications").path]
+        let dirs = ["/Applications", "/System/Applications", Paths.home.appendingPathComponent("Applications").path]
         var names = Set<String>()
         for dir in dirs {
             for item in (try? fm.contentsOfDirectory(atPath: dir)) ?? [] where item.hasSuffix(".app") {
