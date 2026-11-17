@@ -23,14 +23,12 @@ xcrun notarytool history --keychain-profile "$PROFILE" >/dev/null 2>&1 || {
   echo "notary profile '$PROFILE' missing: xcrun notarytool store-credentials $PROFILE --apple-id <id> --team-id <team>" >&2; exit 1; }
 
 swift test
-swift build -c release --product Detour --arch arm64 --arch x86_64
-BIN=$(swift build -c release --product Detour --arch arm64 --arch x86_64 --show-bin-path)/Detour
-
+command -v xcodegen >/dev/null && xcodegen generate --quiet
 rm -rf "$OUT"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN" "$APP/Contents/MacOS/Detour"
-cp Resources/AppIcon.icns "$APP/Contents/Resources/"
-cp Resources/Info.plist "$APP/Contents/Info.plist"
+xcodebuild -project Detour.xcodeproj -scheme Detour -configuration Release -derivedDataPath build/xc \
+  ARCHS="arm64 x86_64" ONLY_ACTIVE_ARCH=NO CODE_SIGN_IDENTITY="$IDENTITY" build -quiet
+mkdir -p "$OUT"
+ditto build/xc/Build/Products/Release/Detour.app "$APP"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" -c "Set :CFBundleVersion $(git rev-list --count HEAD)" "$APP/Contents/Info.plist"
 codesign --force --options runtime --timestamp --sign "$IDENTITY" "$APP"
 codesign --verify --strict --deep "$APP"
