@@ -38,6 +38,7 @@ Detour sits between your apps and your browsers and decides for you. Work links 
 - **Workspace aware.** `github.com/your-company` and `github.com/you` can go to different profiles, same for GitLab, Notion, Linear, Vercel and Figma teams.
 - **Cleaner links.** Removes tracking parameters, rewrites sites you prefer another front end for (x.com to xcancel.com, reddit.com to old.reddit.com), can open Zoom, Teams, Slack, Spotify and more in their apps, and can send a destination to a private window.
 - **Settings as a file.** Export and import your setup as one JSON file, or keep it in your dotfiles.
+- **Works with AI agents.** A `detour` command and MCP server tell agents like Claude Code and Claude in Chrome which profile a link belongs to. See [Detour for AI agents](docs/agents.md).
 - **Asks only when unsure**, with a small picker at your cursor. Press 1 to 9 to choose. Hold ⌥ while clicking to always choose yourself.
 - **Easy to correct.** The menu bar shows your last links. "Open in…" sends one elsewhere and remembers it.
 - **Smart start.** Setup suggests rules from your history, so it works well from the first click.

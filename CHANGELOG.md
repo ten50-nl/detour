@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.0
+
+- Detour for AI agents: a `detour` command (`which`, `open`, `browsers`) and an MCP server (`detour mcp`), so agents like Claude Code and Claude in Chrome know which browser and profile a link belongs to. See docs/agents.md.
+- Settings → General → Use with AI agents has the setup command with a copy button.
+- Homebrew installs put `detour` on your PATH.
+
 ## 1.5.0
 
 - Rewrite links: swap a site for another before it opens, like x.com to xcancel.com or reddit.com to old.reddit.com (Settings → General).
