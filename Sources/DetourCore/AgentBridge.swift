@@ -87,6 +87,7 @@ public enum AgentBridge {
 
 public struct MCPServer {
     public static let protocolVersion = "2025-06-18"
+    static let supportedVersions: Set<String> = ["2025-06-18", "2025-11-25"]
     public static let instructions = """
     Detour is the user's link router: it knows which browser and which browser profile (for example a work or a personal Chrome profile) the user opens each website in.
 
@@ -109,17 +110,23 @@ public struct MCPServer {
 
     public func handle(line: String) -> String? {
         guard !line.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
-        guard let message = try? JSONSerialization.jsonObject(with: Data(line.utf8)) as? [String: Any] else {
+        guard let parsed = try? JSONSerialization.jsonObject(with: Data(line.utf8), options: [.fragmentsAllowed]) else {
             return encode(["jsonrpc": "2.0", "id": NSNull(), "error": ["code": -32700, "message": "Parse error"]])
         }
+        guard let message = parsed as? [String: Any] else {
+            return encode(["jsonrpc": "2.0", "id": NSNull(), "error": ["code": -32600, "message": "Invalid request"]])
+        }
         guard let id = message["id"], !(id is NSNull) else { return nil }
-        let method = message["method"] as? String ?? ""
+        if message["result"] != nil || message["error"] != nil { return nil }
+        guard let method = message["method"] as? String else {
+            return encode(["jsonrpc": "2.0", "id": id, "error": ["code": -32600, "message": "Invalid request"]])
+        }
         let params = message["params"] as? [String: Any] ?? [:]
         let result: [String: Any]
         switch method {
         case "initialize":
             result = [
-                "protocolVersion": (params["protocolVersion"] as? String) ?? Self.protocolVersion,
+                "protocolVersion": (params["protocolVersion"] as? String).flatMap { Self.supportedVersions.contains($0) ? $0 : nil } ?? Self.protocolVersion,
                 "capabilities": ["tools": [String: Any]()],
                 "serverInfo": ["name": "detour", "title": "Detour", "version": Self.version],
                 "instructions": Self.instructions,
@@ -129,6 +136,10 @@ public struct MCPServer {
         case "tools/list":
             result = ["tools": Self.tools]
         case "tools/call":
+            let name = params["name"] as? String ?? ""
+            guard Self.tools.contains(where: { $0["name"] as? String == name }) else {
+                return encode(["jsonrpc": "2.0", "id": id, "error": ["code": -32602, "message": "Unknown tool: \(name)"]])
+            }
             result = call(name: params["name"] as? String ?? "", arguments: params["arguments"] as? [String: Any] ?? [:])
         default:
             return encode(["jsonrpc": "2.0", "id": id, "error": ["code": -32601, "message": "Method not found: \(method)"]])

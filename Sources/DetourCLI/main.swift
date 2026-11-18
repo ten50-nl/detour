@@ -20,6 +20,7 @@ func openWithDetour(_ url: URL) -> Bool {
     let process = Process()
     process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
     process.arguments = ["-b", "nl.ten50.detour", url.absoluteString]
+    process.standardOutput = FileHandle.nullDevice
     process.standardError = FileHandle.nullDevice
     guard (try? process.run()) != nil else { return false }
     process.waitUntilExit()

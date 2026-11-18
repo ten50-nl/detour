@@ -32,7 +32,7 @@ ditto build/xc/Build/Products/Release/Detour.app "$APP"
 swift build -c release --product detour-cli --arch arm64 --arch x86_64
 mkdir -p "$APP/Contents/Helpers"
 cp "$(swift build -c release --product detour-cli --arch arm64 --arch x86_64 --show-bin-path)/detour-cli" "$APP/Contents/Helpers/detour"
-codesign --force --options runtime --timestamp --sign "$IDENTITY" "$APP/Contents/Helpers/detour"
+codesign --force --options runtime --timestamp --identifier nl.ten50.detour.cli --sign "$IDENTITY" "$APP/Contents/Helpers/detour"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" -c "Set :CFBundleVersion $(git rev-list --count HEAD)" "$APP/Contents/Info.plist"
 codesign --force --options runtime --timestamp --sign "$IDENTITY" "$APP"
 codesign --verify --strict --deep "$APP"

@@ -138,6 +138,24 @@ import Testing
         #expect((r["error"] as? [String: Any])?["code"] as? Int == -32700)
     }
 
+    @Test func unsupportedProtocolVersionGetsOurs() throws {
+        let r = try call(server(), #"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2099-01-01"}}"#)
+        #expect((r["result"] as? [String: Any])?["protocolVersion"] as? String == MCPServer.protocolVersion)
+    }
+
+    @Test func unknownToolIsInvalidParams() throws {
+        let r = try call(server(), #"{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"nope","arguments":{}}}"#)
+        #expect((r["error"] as? [String: Any])?["code"] as? Int == -32602)
+    }
+
+    @Test func invalidRequests() throws {
+        let array = try call(server(), "[1,2]")
+        #expect((array["error"] as? [String: Any])?["code"] as? Int == -32600)
+        let noMethod = try call(server(), #"{"jsonrpc":"2.0","id":7}"#)
+        #expect((noMethod["error"] as? [String: Any])?["code"] as? Int == -32600)
+        #expect(server().handle(line: #"{"jsonrpc":"2.0","id":7,"result":{}}"#) == nil)
+    }
+
     @Test func pingAnswers() throws {
         let r = try call(server(), #"{"jsonrpc":"2.0","id":9,"method":"ping"}"#)
         #expect(r["result"] is [String: Any])
