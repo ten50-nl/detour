@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.1
+
+- Claude in Chrome: Detour now remembers which connection is which profile (new `remember_browser` tool), because connection names don't stick between sessions. You answer once per profile, after that `which_browser` returns the right connection.
+
 ## 1.6.0
 
 - Detour for AI agents: a `detour` command (`which`, `open`, `browsers`) and an MCP server (`detour mcp`), so agents like Claude Code and Claude in Chrome know which browser and profile a link belongs to. See docs/agents.md.
