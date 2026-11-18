@@ -41,7 +41,7 @@ switch args.first {
 case "which":
     guard args.count == 2 else { fail(usage, code: 64) }
     do {
-        let answer = try AgentBridge.answer(for: args[1], engine: DetourFiles.loadEngine())
+        let answer = try AgentBridge.answer(for: args[1], engine: DetourFiles.loadEngine(), links: BrowserLinks.load())
         json ? printJSON(answer) : print(AgentBridge.describe(answer))
     } catch { fail(error.localizedDescription) }
 case "open":
@@ -59,7 +59,8 @@ case "browsers":
         }
     } catch { fail(error.localizedDescription) }
 case "mcp":
-    let server = MCPServer(engine: { try DetourFiles.loadEngine() }, open: openWithDetour)
+    let server = MCPServer(engine: { try DetourFiles.loadEngine() }, open: openWithDetour,
+                           loadLinks: { BrowserLinks.load() }, saveLinks: { try $0.save() })
     while let line = readLine(strippingNewline: true) {
         if let reply = server.handle(line: line) {
             FileHandle.standardOutput.write(Data((reply + "\n").utf8))

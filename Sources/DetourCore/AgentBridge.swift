@@ -31,6 +31,31 @@ public enum DetourFiles {
     }
 }
 
+public struct BrowserLinks: Codable, Equatable, Sendable {
+    public var chrome: [String: DestinationID] = [:]
+
+    public init() {}
+
+    public static let fileName = "agent-browsers.json"
+
+    public func device(for destination: DestinationID) -> String? {
+        chrome.filter { $0.value == destination }.keys.sorted().first
+    }
+
+    public mutating func remember(deviceID: String, destination: DestinationID) {
+        chrome = chrome.filter { $0.value != destination && $0.key != deviceID }
+        chrome[deviceID] = destination
+    }
+
+    public static func load(from dir: URL = DetourFiles.supportDir()) -> BrowserLinks {
+        (try? JSONDecoder().decode(BrowserLinks.self, from: Data(contentsOf: dir.appendingPathComponent(fileName)))) ?? BrowserLinks()
+    }
+
+    public func save(to dir: URL = DetourFiles.supportDir()) throws {
+        try ConfigLoader.save(self, to: dir.appendingPathComponent(Self.fileName))
+    }
+}
+
 public struct AgentAnswer: Codable, Equatable, Sendable {
     public var url: String
     public var destination: DestinationID
@@ -40,6 +65,7 @@ public struct AgentAnswer: Codable, Equatable, Sendable {
     public var privateWindow: Bool
     public var askUser: Bool
     public var reason: String
+    public var chromeConnection: String?
 }
 
 public struct AgentBrowserInfo: Codable, Equatable, Sendable {
@@ -52,7 +78,7 @@ public struct AgentBrowserInfo: Codable, Equatable, Sendable {
 }
 
 public enum AgentBridge {
-    public static func answer(for link: String, engine: RoutingEngine) throws -> AgentAnswer {
+    public static func answer(for link: String, engine: RoutingEngine, links: BrowserLinks = BrowserLinks()) throws -> AgentAnswer {
         let trimmed = link.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let url = URL(string: trimmed), let scheme = url.scheme?.lowercased(), scheme == "http" || scheme == "https",
               url.host?.isEmpty == false else { throw AgentError.notAWebLink }
@@ -61,7 +87,8 @@ public enum AgentBridge {
         let target = engine.rules.destination(decision.target)
         return AgentAnswer(url: prepared.absoluteString, destination: decision.target, name: target?.name ?? decision.target,
                            browser: target.map(browserName) ?? "your default browser", profile: target?.profileName,
-                           privateWindow: target?.privateWindow ?? false, askUser: decision.askUser, reason: decision.reason)
+                           privateWindow: target?.privateWindow ?? false, askUser: decision.askUser, reason: decision.reason,
+                           chromeConnection: links.device(for: decision.target))
     }
 
     public static func describe(_ answer: AgentAnswer) -> String {
@@ -70,7 +97,9 @@ public enum AgentBridge {
         if answer.privateWindow { place += ", private window" }
         place += ")"
         let head = answer.askUser ? "Detour would ask the user, best guess \(place)" : "Opens in \(place)"
-        return "\(head): \(answer.reason). URL: \(answer.url)"
+        let connection = answer.chromeConnection.map { "Claude in Chrome connection: \($0)." }
+            ?? "There is no Claude in Chrome connection remembered for \(answer.name) yet."
+        return "\(head): \(answer.reason). URL: \(answer.url). \(connection)"
     }
 
     public static func browsers(_ rules: RulesConfig) -> [AgentBrowserInfo] {
@@ -93,7 +122,11 @@ public struct MCPServer {
 
     Before you visit a URL with a browser automation tool that controls one specific browser or profile, such as Claude in Chrome, call which_browser with that URL. It returns the Detour destination name, the browser and the profile name.
 
-    With Claude in Chrome, compare that destination name and profile name with the names from list_connected_browsers. If the browser in use doesn't match, tell the user which profile Detour expects before you continue in it. When you ask the user which connected browser to use, list the Detour match first and mark it as recommended. If no connected browser matches, suggest the user reconnects that profile with switch_browser and names it after the Detour destination.
+    With Claude in Chrome: which_browser also returns chromeConnection, the deviceId of the Claude in Chrome connection the user paired with that destination. Connection names like "Browser 1" mean nothing, so always go by deviceId.
+    - If chromeConnection is the browser in use, continue.
+    - If chromeConnection is another connected browser, tell the user this link belongs to that profile before you continue, and offer to switch to it (select_browser with that deviceId).
+    - When you ask the user which connected browser to use, list the chromeConnection first and mark it as recommended.
+    - If chromeConnection is missing or not in list_connected_browsers, ask the user which connection is that profile, then call remember_browser with its deviceId and the destination, so Detour knows next time.
 
     If which_browser says Detour would ask, the site is used in several profiles: check with the user. If the destination is not a Chromium browser (for example Firefox), say so instead of using Claude in Chrome.
 
@@ -102,10 +135,15 @@ public struct MCPServer {
 
     let engine: () throws -> RoutingEngine
     let open: (URL) -> Bool
+    let loadLinks: () -> BrowserLinks
+    let saveLinks: (BrowserLinks) throws -> Void
 
-    public init(engine: @escaping () throws -> RoutingEngine, open: @escaping (URL) -> Bool) {
+    public init(engine: @escaping () throws -> RoutingEngine, open: @escaping (URL) -> Bool,
+                loadLinks: @escaping () -> BrowserLinks = { BrowserLinks() }, saveLinks: @escaping (BrowserLinks) throws -> Void = { _ in }) {
         self.engine = engine
         self.open = open
+        self.loadLinks = loadLinks
+        self.saveLinks = saveLinks
     }
 
     public func handle(line: String) -> String? {
@@ -159,10 +197,10 @@ public struct MCPServer {
         do {
             switch name {
             case "which_browser":
-                let answer = try AgentBridge.answer(for: arguments["url"] as? String ?? "", engine: engine())
+                let answer = try AgentBridge.answer(for: arguments["url"] as? String ?? "", engine: engine(), links: loadLinks())
                 return content(AgentBridge.describe(answer), structured: answer)
             case "open_link":
-                let answer = try AgentBridge.answer(for: arguments["url"] as? String ?? "", engine: engine())
+                let answer = try AgentBridge.answer(for: arguments["url"] as? String ?? "", engine: engine(), links: loadLinks())
                 let link = arguments["url"] as? String ?? ""
                 guard let url = URL(string: link.trimmingCharacters(in: .whitespacesAndNewlines)), open(url) else {
                     return failure("Detour couldn't open the link. Is Detour installed?")
@@ -178,6 +216,20 @@ public struct MCPServer {
                     return line
                 }
                 return content(lines.joined(separator: "\n"), structured: ["browsers": list])
+            case "remember_browser":
+                let rules = try engine().rules
+                let wanted = (arguments["destination"] as? String ?? "").trimmingCharacters(in: .whitespaces)
+                let device = (arguments["device_id"] as? String ?? "").trimmingCharacters(in: .whitespaces)
+                guard !device.isEmpty else { return failure("Pass the deviceId from list_connected_browsers as device_id.") }
+                guard let target = rules.destinations.first(where: {
+                    $0.id.caseInsensitiveCompare(wanted) == .orderedSame || $0.name.caseInsensitiveCompare(wanted) == .orderedSame
+                }) else {
+                    return failure("Detour has no destination \"\(wanted)\". Use one of: \(rules.destinations.map(\.name).joined(separator: ", ")).")
+                }
+                var links = loadLinks()
+                links.remember(deviceID: device, destination: target.id)
+                try saveLinks(links)
+                return content("Remembered: Claude in Chrome connection \(device) is \(target.name).", structured: ["destination": target.id, "chromeConnection": device])
             default:
                 return failure("Unknown tool \(name)")
             }
@@ -214,6 +266,16 @@ public struct MCPServer {
         ["name": "list_browsers", "title": "List Detour destinations",
          "description": "Lists the user's Detour destinations: name, browser and profile, and which one is the default.",
          "inputSchema": ["type": "object", "properties": [String: Any]()], "annotations": ["readOnlyHint": true, "openWorldHint": false]],
+        ["name": "remember_browser", "title": "Remember a Claude in Chrome connection",
+         "description": "Saves which Claude in Chrome connection (deviceId from list_connected_browsers) is a Detour destination, so which_browser can return it next time. Call it after the user tells you which connection is that profile.",
+         "inputSchema": [
+            "type": "object",
+            "properties": [
+                "device_id": ["type": "string", "description": "deviceId from list_connected_browsers"],
+                "destination": ["type": "string", "description": "Detour destination name or id, as returned by which_browser"],
+            ],
+            "required": ["device_id", "destination"],
+         ], "annotations": ["readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false]],
     ] }
 
     private func encode(_ object: [String: Any]) -> String {

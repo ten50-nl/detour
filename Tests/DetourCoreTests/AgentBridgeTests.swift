@@ -64,14 +64,69 @@ import Testing
     }
 }
 
+@Suite struct BrowserLinkTests {
+    @Test func rememberKeepsOneConnectionPerDestination() {
+        var links = BrowserLinks()
+        links.remember(deviceID: "dev-a", destination: "work")
+        links.remember(deviceID: "dev-b", destination: "work")
+        links.remember(deviceID: "dev-c", destination: "personal")
+        links.remember(deviceID: "dev-c", destination: "ads")
+        #expect(links.device(for: "work") == "dev-b")
+        #expect(links.device(for: "personal") == nil)
+        #expect(links.device(for: "ads") == "dev-c")
+    }
+
+    @Test func roundTripsThroughFile() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        #expect(BrowserLinks.load(from: dir) == BrowserLinks())
+        var links = BrowserLinks()
+        links.remember(deviceID: "dev-a", destination: "work")
+        try links.save(to: dir)
+        #expect(BrowserLinks.load(from: dir).device(for: "work") == "dev-a")
+        #expect(FileManager.default.fileExists(atPath: dir.appendingPathComponent("agent-browsers.json").path))
+    }
+
+    @Test func answerCarriesRememberedConnection() throws {
+        var links = BrowserLinks()
+        links.remember(deviceID: "dev-a", destination: "work")
+        let answer = try AgentBridge.answer(for: "https://acme-corp.atlassian.net/", engine: RoutingEngine(rules: .fixture), links: links)
+        #expect(answer.chromeConnection == "dev-a")
+        #expect(AgentBridge.describe(answer).contains("Claude in Chrome connection: dev-a"))
+        let other = try AgentBridge.answer(for: "https://reddit.com/", engine: RoutingEngine(rules: .fixture), links: links)
+        #expect(other.chromeConnection == nil)
+        #expect(AgentBridge.describe(other).contains("no Claude in Chrome connection remembered"))
+    }
+}
+
 @Suite struct MCPServerTests {
     final class Opened: @unchecked Sendable { var urls: [URL] = [] }
 
-    func server(_ opened: Opened = Opened(), settings: Bool = true) -> MCPServer {
+    final class Saved: @unchecked Sendable { var links = BrowserLinks() }
+
+    func server(_ opened: Opened = Opened(), settings: Bool = true, saved: Saved = Saved()) -> MCPServer {
         MCPServer(engine: {
             guard settings else { throw AgentError.noSettings }
             return RoutingEngine(rules: .fixture)
-        }, open: { opened.urls.append($0); return true })
+        }, open: { opened.urls.append($0); return true },
+        loadLinks: { saved.links }, saveLinks: { saved.links = $0 })
+    }
+
+    @Test func rememberBrowserByNameOrID() throws {
+        let saved = Saved()
+        let s = server(saved: saved)
+        let r = try call(s, #"{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"remember_browser","arguments":{"device_id":"dev-a","destination":"work"}}}"#)
+        #expect(text(r).contains("Work"))
+        _ = try call(s, #"{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"remember_browser","arguments":{"device_id":"dev-b","destination":"ad-FREE"}}}"#)
+        #expect(saved.links.device(for: "work") == "dev-a")
+        #expect(saved.links.device(for: "ads") == "dev-b")
+        let w = try call(s, #"{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"which_browser","arguments":{"url":"https://acme-corp.atlassian.net/"}}}"#)
+        #expect(((w["result"] as? [String: Any])?["structuredContent"] as? [String: Any])?["chromeConnection"] as? String == "dev-a")
+    }
+
+    @Test func rememberBrowserRejectsUnknownDestination() throws {
+        let r = try call(server(), #"{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"remember_browser","arguments":{"device_id":"dev-a","destination":"nope"}}}"#)
+        #expect((r["result"] as? [String: Any])?["isError"] as? Bool == true)
+        #expect(text(r).contains("Work"))
     }
 
     func call(_ server: MCPServer, _ json: String) throws -> [String: Any] {
@@ -94,10 +149,10 @@ import Testing
         #expect(r["id"] as? Int == 1)
     }
 
-    @Test func listsThreeTools() throws {
+    @Test func listsFourTools() throws {
         let r = try call(server(), #"{"jsonrpc":"2.0","id":"a","method":"tools/list"}"#)
         let tools = try #require((r["result"] as? [String: Any])?["tools"] as? [[String: Any]])
-        #expect(tools.compactMap { $0["name"] as? String } == ["which_browser", "open_link", "list_browsers"])
+        #expect(tools.compactMap { $0["name"] as? String } == ["which_browser", "open_link", "list_browsers", "remember_browser"])
         #expect(r["id"] as? String == "a")
     }
 

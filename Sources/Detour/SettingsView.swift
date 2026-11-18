@@ -61,7 +61,7 @@ struct GeneralTab: View {
                 } header: {
                     Text("Use with AI agents")
                 } footer: {
-                    Text("Agents can ask Detour which browser and profile a link belongs to. With Claude in Chrome, name each Chrome connection after its Detour destination, like Work or Personal, so Claude can match them.")
+                    Text("Agents can ask Detour which browser and profile a link belongs to. With Claude in Chrome, the first time you tell Claude which connection is which profile, Detour remembers it.")
                         .font(.caption).foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
