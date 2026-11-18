@@ -6,6 +6,7 @@ let package = Package(
     platforms: [.macOS(.v15)],
     products: [
         .executable(name: "Detour", targets: ["Detour"]),
+        .executable(name: "detour-cli", targets: ["DetourCLI"]),
         .library(name: "DetourCore", targets: ["DetourCore"]),
     ],
     targets: [
@@ -15,6 +16,10 @@ let package = Package(
         ),
         .executableTarget(
             name: "Detour",
+            dependencies: ["DetourCore"]
+        ),
+        .executableTarget(
+            name: "DetourCLI",
             dependencies: ["DetourCore"]
         ),
         .testTarget(

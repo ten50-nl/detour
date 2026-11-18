@@ -137,7 +137,11 @@ public struct MCPServer {
     }
 
     public static var version: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "dev"
+        if let own = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String { return own }
+        let contents = Bundle.main.executableURL?.resolvingSymlinksInPath().deletingLastPathComponent().deletingLastPathComponent()
+        guard let plist = contents?.appendingPathComponent("Info.plist"),
+              let info = NSDictionary(contentsOf: plist), let version = info["CFBundleShortVersionString"] as? String else { return "dev" }
+        return version
     }
 
     private func call(name: String, arguments: [String: Any]) -> [String: Any] {

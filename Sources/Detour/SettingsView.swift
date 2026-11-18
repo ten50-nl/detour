@@ -55,6 +55,17 @@ struct GeneralTab: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             Section { SettingsFileSection(state: state) }
+            if AgentsSection.isAvailable {
+                Section {
+                    AgentsSection()
+                } header: {
+                    Text("Use with AI agents")
+                } footer: {
+                    Text("Agents can ask Detour which browser and profile a link belongs to. With Claude in Chrome, name each Chrome connection after its Detour destination, like Work or Personal, so Claude can match them.")
+                        .font(.caption).foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
             if Updater.isSupported {
                 Section { UpdatesSection() }
             }
@@ -722,6 +733,44 @@ struct RewritesSection: View {
         var rules = state.rules
         rules.rewrites.removeAll { $0 == rule }
         state.updateRules(rules)
+    }
+}
+
+struct AgentsSection: View {
+    static var helper: URL { Bundle.main.bundleURL.appendingPathComponent("Contents/Helpers/detour") }
+    static var isAvailable: Bool { !Paths.isAppStore && FileManager.default.isExecutableFile(atPath: helper.path) }
+    @State private var copied: String?
+
+    private var claudeCommand: String { "claude mcp add --scope user detour -- \"\(Self.helper.path)\" mcp" }
+    private var serverJSON: String {
+        "\"detour\": { \"command\": \"\(Self.helper.path)\", \"args\": [\"mcp\"] }"
+    }
+
+    var body: some View {
+        row(title: "Claude Code", detail: "Run this once in Terminal.", value: claudeCommand)
+        row(title: "Other agents", detail: "Add this MCP server to Claude Desktop, Cursor or any other agent.", value: serverJSON)
+    }
+
+    private func row(title: String, detail: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                    Text(detail).font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button(copied == title ? "Copied" : "Copy") {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(value, forType: .string)
+                    copied = title
+                }
+            }
+            Text(value)
+                .font(.system(.caption, design: .monospaced))
+                .textSelection(.enabled)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+        }
     }
 }
 
