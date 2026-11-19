@@ -54,7 +54,7 @@ Settings → General → Use with AI agents has both with a copy button.
 
 Claude in Chrome connects to each Chrome profile as a separate browser, called "Browser 1", "Browser 2" and so on. Those names tell Claude nothing, and a name you give a connection doesn't stick between sessions.
 
-So Detour remembers the connection instead. The first time Claude needs a profile it doesn't know yet, it asks you which connection that is and saves the pairing with `remember_browser`. From then on `which_browser` returns the connection ID with the answer, and that ID stays the same across sessions. The pairings live in `agent-browsers.json` next to your Detour settings.
+So Detour remembers the connection instead. The first time Claude needs a profile it doesn't know yet, it opens a tab in each unknown connection, asks you which window it appeared in, and saves the pairing with `remember_browser`. From then on `which_browser` returns the connection ID with the answer, and that ID stays the same across sessions. The pairings live in `agent-browsers.json` next to your Detour settings.
 
 Claude in Chrome asks you before switching between connected browsers, and Detour doesn't change that. What changes is that Claude knows which one to recommend, and warns you when you're about to do work things in your personal profile.
 

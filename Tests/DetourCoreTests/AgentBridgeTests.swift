@@ -149,6 +149,13 @@ import Testing
         #expect(r["id"] as? Int == 1)
     }
 
+    @Test func instructionsShowUnknownConnectionsBeforeAsking() {
+        let text = MCPServer.instructions
+        #expect(text.contains("tabs_create_mcp"))
+        #expect(text.contains("which window"))
+        #expect(text.contains("never guess"))
+    }
+
     @Test func listsFourTools() throws {
         let r = try call(server(), #"{"jsonrpc":"2.0","id":"a","method":"tools/list"}"#)
         let tools = try #require((r["result"] as? [String: Any])?["tools"] as? [[String: Any]])

@@ -126,7 +126,7 @@ public struct MCPServer {
     - If chromeConnection is the browser in use, continue.
     - If chromeConnection is another connected browser, tell the user this link belongs to that profile before you continue, and offer to switch to it (select_browser with that deviceId).
     - When you ask the user which connected browser to use, list the chromeConnection first and mark it as recommended.
-    - If chromeConnection is missing or not in list_connected_browsers, ask the user which connection is that profile, then call remember_browser with its deviceId and the destination, so Detour knows next time.
+    - If chromeConnection is missing or not in list_connected_browsers, find out which connection is that profile. Connection names don't say which Chrome window they control and the user can't tell them apart either, so never guess and don't offer "the one used last" as a hint. For each connected browser Detour doesn't know yet, one at a time: select_browser with its deviceId, open a new tab with tabs_create_mcp, then ask the user which window or profile the tab just appeared in. Call remember_browser with that deviceId and the destination the user names, so Detour knows next time. Close the tabs you opened for this afterwards.
 
     If which_browser says Detour would ask, the site is used in several profiles: check with the user. If the destination is not a Chromium browser (for example Firefox), say so instead of using Claude in Chrome.
 

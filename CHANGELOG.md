@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.2
+
+- Claude in Chrome: when Claude doesn't know a connection yet, it first opens a tab in it and asks which window it appeared in, instead of making you guess between "Browser 1" and "Browser 2".
+
 ## 1.6.1
 
 - Claude in Chrome: Detour now remembers which connection is which profile (new `remember_browser` tool), because connection names don't stick between sessions. You answer once per profile, after that `which_browser` returns the right connection.
